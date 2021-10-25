@@ -1,4 +1,5 @@
 
 # tomasulo-simulator
-![example workflow](https://github.com/danielstumpp/tomasulo-simulator/actions/workflows/python-package/badge.svg)
+[![Android-master Actions Status](https://github.com/danielstumpp/tomasulo-simulator/workflows/python-package/badge.svg)](https://github.com/danielstumpp/tomasulo-simulator/actions)
+
 Implementation of Tomasulo's Algorithm for CA
