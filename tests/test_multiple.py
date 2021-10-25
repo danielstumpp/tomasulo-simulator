@@ -9,5 +9,5 @@ def test_add_3_4():
     assert add(3, 4) == 7
 
 def test_add_4_4():
-    assert add(4, 4) == 8
+    assert add(4, 4) == 9
 
