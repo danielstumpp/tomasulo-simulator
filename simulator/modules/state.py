@@ -14,3 +14,12 @@ class State:
 
         # initialize the system memory to zero
         self.memory = [0] * 256
+
+        # initialize instruction memory
+        self.instructions = []
+
+        self.PC = 0     # program counter
+
+        # TODO: Add more here as needed ... 
+
+
