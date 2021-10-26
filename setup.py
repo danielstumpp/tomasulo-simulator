@@ -8,5 +8,5 @@ setup(
     author_email='dcs98@pitt.edu',
     packages=['simulator'],  # same as name
     # external packages as dependencies
-    install_requires=['pytest', 'pytest-cov', 'coveralls'],
+    install_requires=['pytest', 'pytest-cov', 'coveralls','pyyaml'],
 )
