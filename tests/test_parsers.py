@@ -31,6 +31,7 @@ def test_non_numeric_entry():
     state = State()
     assert psr.init_memory(state, fn) == False
 
+
 def test_good_mem_init():
     fn = 'tests/inputs/mem/good_test.mem'
     state = State()
@@ -39,20 +40,24 @@ def test_good_mem_init():
     for i in range(6):
         assert state.memory[i] == 1.5*(i+1)
 
+
 def test_bad_register_filename():
     fn = 'tests/inputs/reg/bad-reg-filename.reg'
     state = State()
     assert psr.init_registers(state, fn) == False
+
 
 def test_bad_register_name():
     fn = 'tests/inputs/reg/bad_invalid_name.reg'
     state = State()
     assert psr.init_registers(state, fn) == False
 
+
 def test_bad_int_value():
     fn = 'tests/inputs/reg/bad_int_value.reg'
     state = State()
     assert psr.init_registers(state, fn) == False
+
 
 def test_good_reg_inti():
     fn = 'tests/inputs/reg/good_test.reg'
@@ -62,6 +67,3 @@ def test_good_reg_inti():
     assert state.registers['F31'] == 10.5
     assert state.registers['R1'] == 10
     assert state.registers['R31'] == 15
-    
-
-

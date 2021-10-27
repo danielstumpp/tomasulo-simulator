@@ -10,7 +10,8 @@ def load_config(state: State, config_file: str):
     try:
         yaml_file = open(config_file)
     except:
-        print("ERROR: config file -- " +config_file + " -- could not be opened!")
+        print("ERROR: config file -- " +
+              config_file + " -- could not be opened!")
         return False
 
     try:
@@ -22,21 +23,20 @@ def load_config(state: State, config_file: str):
     # TODO
 
     return True
-        
 
 
 def init_memory(state: State, mem_file: str):
     """ Initializes the memory of the state based on the provided memory file"""
     # read in memory file as csv
     try:
-        csv_file = open(mem_file,newline='')
+        csv_file = open(mem_file, newline='')
     except:
         print("ERROR: memory file -- " +
               mem_file + " -- could not be opened!")
         return False
 
     try:
-        reader = csv.reader(csv_file,delimiter=',')
+        reader = csv.reader(csv_file, delimiter=',')
     except:
         print("ERROR: could not read mem file")
         return False
@@ -59,11 +59,10 @@ def init_memory(state: State, mem_file: str):
         if addr < 256 and addr >= 0 and addr % 4 == 0:
             state.memory[int(addr/4)] = val
         else:
-            print("ERROR: Invalid memory entry -> line ",i + 1)
+            print("ERROR: Invalid memory entry -> line ", i + 1)
             return False
 
     return True
-
 
 
 def init_registers(state: State, reg_file: str):
@@ -85,16 +84,16 @@ def init_registers(state: State, reg_file: str):
     reader_list = list(reader)
     for i in range(len(reader_list)):
         line = reader_list[i]
-        
+
         # check if string is valid register name
         if line[0].strip() not in state.registers:
-            print('ERROR: Invalid register name -> line ',i + 1)
+            print('ERROR: Invalid register name -> line ', i + 1)
             return False
-        #check if value is numeric
+        # check if value is numeric
         try:
             float(line[1].strip())
         except:
-            print('ERROR: Invalid register value -> line ',i + 1)
+            print('ERROR: Invalid register value -> line ', i + 1)
             return False
 
         reg = line[0].strip()
@@ -107,12 +106,10 @@ def init_registers(state: State, reg_file: str):
         else:
             # everything is good, put into register
             state.registers[reg] = val
-            
+
     return True
 
 
 def parse_instructions(state: State, asm_file: str):
     """ Parses the input assembly file and adds instructions to the state"""
     pass
-
-
