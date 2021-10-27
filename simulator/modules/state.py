@@ -1,6 +1,5 @@
 """ Defines the relevant objects for saving the state of the simulator"""
 
-
 class State:
     """ Simulator State Object"""
 

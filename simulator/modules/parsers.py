@@ -111,9 +111,11 @@ def init_registers(state: State, reg_file: str):
 
     return True
 
+
 def check_valid_reg(reg: str):
     state = State()
-    return (reg in state.registers)
+    return (reg in state.registers) 
+
 
 def validate_instruction(inst_list: list, inst: Instruction) -> bool:
     """ Validates a single instruction passed in as a list in the format [OP, R1, R2/Offset, R3/immediate"""
@@ -135,18 +137,29 @@ def validate_instruction(inst_list: list, inst: Instruction) -> bool:
         inst.Rs = inst_list[1]
         inst.Rt = inst_list[2]
         inst.offset = inst_list[3]
+        if (type(inst.Rs) != str or type(inst.Rt) != str or type(inst.offset) != int):
+            return False
+        else:
+            return check_valid_reg(inst.Rs) and check_valid_reg(inst.Rt)
     elif op == 'ADD' or op == 'SUB':
         inst.Rd = inst_list[1]
         inst.Rs = inst_list[2]
         inst.Rt = inst_list[3]
+        if (type(inst.Rd) != str or type(inst.Rs) != str or type(inst.Rt) != str):
+            return False
+        else:
+            return check_valid_reg(inst.Rd) and check_valid_reg(inst.Rs) and check_valid_reg(inst.Rt)
     elif op == 'ADD.D' or op == 'SUB.D' or op == 'MULT.D':
         inst.Fd = inst_list[1]
         inst.Fs = inst_list[2]
         inst.Ft = inst_list[3]
+        if (type(inst.Fd) != str or type(inst.Fs) != str or type(inst.Ft) != str):
+            return False
+        else:
+            return check_valid_reg(inst.Fd) and check_valid_reg(inst.Fs) and check_valid_reg(inst.Ft)
     else:
         print('ERROR: unknown issue in `validate_instruction`')
         return False
-    return True
 
 
 def parse_instructions(state: State, asm_file: str):

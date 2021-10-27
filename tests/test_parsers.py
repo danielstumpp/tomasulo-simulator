@@ -69,12 +69,33 @@ def test_good_reg_inti():
     assert state.registers['R1'] == 10
     assert state.registers['R31'] == 15
 
-def test_validate_instruction():
+def test_validate_instruction_LD_SD():
     il = ['LD','F3',8,'R4']
     inst = Instruction()
     assert psr.validate_instruction(il,inst) == True
     il = ['LD', 8, 9, 'R3']
     assert psr.validate_instruction(il, inst) == False
     il = ['LD', 'F9', 9, 'R33']
+    assert psr.validate_instruction(il, inst) == False
+    il = ['SD', 8, 9, 'R33']
+    assert psr.validate_instruction(il, inst) == False
+    il = ['LD', 'F', 9, 'R3']
+    assert psr.validate_instruction(il, inst) == False
+    il = ['SD', 'F12',24, 'R1']
+    assert psr.validate_instruction(il, inst) == True
+
+def test_validate_instruction_BNE_BEQ():
+    il = ['BEQ', 'F3', 'R4', 8]
+    inst = Instruction()
+    assert psr.validate_instruction(il, inst) == True
+    il = ['BNE', 'F3', 'R4', 8]
+    assert psr.validate_instruction(il, inst) == True
+    il = ['BNE', 'F3', 'R4', 'R9']
+    assert psr.validate_instruction(il, inst) == False
+    il = ['BEQ', 'F3', 0, 8]
+    assert psr.validate_instruction(il, inst) == False
+    il = ['BNE', 'A3', 'R4', 8]
+    assert psr.validate_instruction(il, inst) == False
+    il = ['BEQ', 9, 'R4', 8]
     assert psr.validate_instruction(il, inst) == False
 
