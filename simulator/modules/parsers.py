@@ -114,7 +114,7 @@ def init_registers(state: State, reg_file: str):
 
 def check_valid_reg(reg: str):
     state = State()
-    return (reg in state.registers) 
+    return (reg in state.registers)
 
 
 def validate_instruction(inst_list: list, inst: Instruction) -> bool:
@@ -212,7 +212,7 @@ def parse_instructions(state: State, asm_file: str):
             else:
                 print('ERROR: Invalid Instruction -> line ', i+1)
                 return False
-        else:
+        elif len(line) == 3:
             op = line[0].strip().upper()
             r1 = line[1].strip().upper()
             os_Ra = line[2].strip().upper()
@@ -227,7 +227,9 @@ def parse_instructions(state: State, asm_file: str):
             if valid:
                 state.instructions.append(inst)
             else:
-                print('ERROR: Invalid Instruction -> line ',i+1)
+                print('ERROR: Invalid Instruction -> line ', i+1)
                 return False
+        else:
+            print('ERROR: Invalid Instruction -> line ', i+1)
+            return False
     return True
-
