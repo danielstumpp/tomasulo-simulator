@@ -99,3 +99,9 @@ def test_validate_instruction_BNE_BEQ():
     il = ['BEQ', 9, 'R4', 8]
     assert psr.validate_instruction(il, inst) == False
 
+def test_parse_instructions_good():
+    fn = 'tests/inputs/inst/inst1.asm'
+    state = State()
+    assert psr.parse_instructions(state, fn) == True
+    
+
