@@ -1,5 +1,7 @@
 """ parser functions to convert input configurations into runnable simulator input"""
 from simulator.modules.state import State
+from simulator.modules.instruction import Instruction
+from simulator.modules.instruction import VALID_INSTRUCTIONS
 import yaml
 import csv
 
@@ -107,6 +109,43 @@ def init_registers(state: State, reg_file: str):
             # everything is good, put into register
             state.registers[reg] = val
 
+    return True
+
+def check_valid_reg(reg: str):
+    state = State()
+    return (reg in state.registers)
+
+def validate_instruction(inst_list: list, inst: Instruction) -> bool:
+    """ Validates a single instruction passed in as a list in the format [OP, R1, R2/Offset, R3/immediate"""
+    op = str(inst_list[0]).strip().upper()
+    if op not in VALID_INSTRUCTIONS:
+        print('here')
+        return False
+
+    inst.type = op
+    if op == 'LD' or op == 'SD':
+        inst.Fa = inst_list[1]
+        inst.offset = inst_list[2]
+        inst.Ra = inst_list[3]
+        if (type(inst.Ra) != str or type(inst.offset) != int or type(inst.Ra) != str):
+            return False
+        else:
+            return check_valid_reg(inst.Ra) and check_valid_reg(inst.Fa)
+    elif op == 'BNE' or op == 'BEQ':
+        inst.Rs = inst_list[1]
+        inst.Rt = inst_list[2]
+        inst.offset = inst_list[3]
+    elif op == 'ADD' or op == 'SUB':
+        inst.Rd = inst_list[1]
+        inst.Rs = inst_list[2]
+        inst.Rt = inst_list[3]
+    elif op == 'ADD.D' or op == 'SUB.D' or op == 'MULT.D':
+        inst.Fd = inst_list[1]
+        inst.Fs = inst_list[2]
+        inst.Ft = inst_list[3]
+    else:
+        print('ERROR: unknown issue in `validate_instruction`')
+        return False
     return True
 
 

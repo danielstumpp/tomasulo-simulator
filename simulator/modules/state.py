@@ -20,6 +20,4 @@ class State:
 
         self.PC = 0     # program counter
 
-        # TODO: Add more here as needed ... 
-
-
+        # TODO: Add more here as needed ...

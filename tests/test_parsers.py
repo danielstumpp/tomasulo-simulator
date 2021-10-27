@@ -1,3 +1,4 @@
+from simulator.modules.instruction import Instruction
 import simulator.modules.parsers as psr
 from simulator.modules.state import State
 
@@ -67,3 +68,13 @@ def test_good_reg_inti():
     assert state.registers['F31'] == 10.5
     assert state.registers['R1'] == 10
     assert state.registers['R31'] == 15
+
+def test_validate_instruction():
+    il = ['LD','F3',8,'R4']
+    inst = Instruction()
+    assert psr.validate_instruction(il,inst) == True
+    il = ['LD', 8, 9, 'R3']
+    assert psr.validate_instruction(il, inst) == False
+    il = ['LD', 'F9', 9, 'R33']
+    assert psr.validate_instruction(il, inst) == False
+
