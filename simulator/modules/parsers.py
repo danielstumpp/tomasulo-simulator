@@ -199,7 +199,6 @@ def parse_instructions(state: State, asm_file: str):
     reader_list = list(reader)
     for i in range(len(reader_list)):
         line = reader_list[i]
-        print(len(line))
         if len(line) == 4:
             op = line[0].strip().upper()
             r1 = line[1].strip().upper()
@@ -207,7 +206,6 @@ def parse_instructions(state: State, asm_file: str):
             r3 = line[3].strip().upper()
 
             inst = Instruction()
-            print([op, r1, r2, r3])
             valid = validate_instruction([op, r1, r2, r3], inst)
             if valid:
                 state.instructions.append(inst)
@@ -225,7 +223,6 @@ def parse_instructions(state: State, asm_file: str):
                 return False
 
             inst = Instruction()
-            print([op, r1, offset, ra])
             valid = validate_instruction([op, r1, offset, ra], inst)
             if valid:
                 state.instructions.append(inst)
