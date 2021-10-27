@@ -2,7 +2,7 @@ from simulator.modules import state
 
 def test_state_mem_init():
     test_state = state.State()
-    assert len(test_state.memory) == 256
+    assert len(test_state.memory) == 64
     for i in range(len(test_state.memory)):
         assert test_state.memory[i] == 0
 

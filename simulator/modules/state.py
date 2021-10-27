@@ -13,7 +13,7 @@ class State:
         self.registers = dict.fromkeys(register_keys, 0)
 
         # initialize the system memory to zero
-        self.memory = [0] * 256
+        self.memory = [0.0] * 64
 
         # initialize instruction memory
         self.instructions = []
