@@ -1,5 +1,4 @@
 """ parser functions to convert input configurations into runnable simulator input"""
-from os import read
 from simulator.modules.state import State
 import yaml
 import csv
@@ -69,7 +68,47 @@ def init_memory(state: State, mem_file: str):
 
 def init_registers(state: State, reg_file: str):
     """ Initializes the registers of the state based on provided register value file"""
-    pass
+    # read in register file as csv
+    try:
+        csv_file = open(reg_file, newline='')
+    except:
+        print("ERROR: register file -- " +
+              reg_file + " -- could not be opened!")
+        return False
+
+    try:
+        reader = csv.reader(csv_file, delimiter=',')
+    except:
+        print("ERROR: could not read reg file")
+        return False
+
+    reader_list = list(reader)
+    for i in range(len(reader_list)):
+        line = reader_list[i]
+        
+        # check if string is valid register name
+        if line[0].strip() not in state.registers:
+            print('ERROR: Invalid register name -> line ',i + 1)
+            return False
+        #check if value is numeric
+        try:
+            float(line[1].strip())
+        except:
+            print('ERROR: Invalid register value -> line ',i + 1)
+            return False
+
+        reg = line[0].strip()
+        val = float(line[1].strip())
+
+        # check for floats put in int registers
+        if val % 1 != 0 and reg[0] == 'R':
+            print('ERROR: Float in Int Register -> line ', i + 1)
+            return False
+        else:
+            # everything is good, put into register
+            state.registers[reg] = val
+            
+    return True
 
 
 def parse_instructions(state: State, asm_file: str):
