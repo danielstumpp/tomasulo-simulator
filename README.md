@@ -7,7 +7,7 @@ Implementation of Tomasulo's Algorithm for CA
 ## Simulator Configuration
 the simulator is configured using yaml configuration files with the following format:
 
-```
+```yaml
 # yaml name field
 name: test1_config
 
