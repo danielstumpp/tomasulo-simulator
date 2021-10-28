@@ -114,5 +114,10 @@ def test_parse_instructions_good():
     assert state.instructions[1].Ra == 'R10'
     assert state.instructions[2].offset == -3
     assert state.instructions[2].type == 'BNE'
+
+def test_good_config():
+    fn = 'tests/inputs/config/test1_config.yml'
+    state = State()
+    psr.load_config(state,fn) == True
     
 

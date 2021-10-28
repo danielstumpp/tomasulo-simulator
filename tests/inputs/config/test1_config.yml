@@ -28,6 +28,7 @@ FUs:
 ROBentries: 128
 CDBbufferLength: 1
 
-memInitFile: mem1.mem
-regInitFile: reg1.reg
-instFile: inst1.asm
+# init files
+memInitFile: tests/inputs/mem/mem1.mem
+regInitFile: tests/inputs/reg/reg1.reg
+instFile: tests/inputs/inst/inst1.asm

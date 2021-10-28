@@ -6,25 +6,7 @@ import yaml
 import csv
 
 
-def load_config(state: State, config_file: str):
-    """ Loads the specified yaml configuration file and returns loaded initial state by ref"""
-    # open yaml file
-    try:
-        yaml_file = open(config_file)
-    except:
-        print("ERROR: config file -- " +
-              config_file + " -- could not be opened!")
-        return False
 
-    try:
-        config = yaml.safe_load(config_file)
-    except yaml.YAMLError as exc:
-        print("Error in configuration file:", exc)
-        return False
-
-    # TODO
-
-    return True
 
 
 def init_memory(state: State, mem_file: str):
@@ -233,3 +215,47 @@ def parse_instructions(state: State, asm_file: str):
             print('ERROR: Invalid Instruction -> line ', i+1)
             return False
     return True
+
+
+def load_config(state: State, config_file: str):
+    """ Loads the specified yaml configuration file and returns loaded initial state by ref"""
+    # open yaml file
+    try:
+        yaml_file = open(config_file, "r")
+    except:
+        print("ERROR: config file -- " +
+              config_file + " -- could not be opened!")
+        return False
+
+    try:
+        config = yaml.safe_load(yaml_file)
+    except yaml.YAMLError as exc:
+        print("Error in configuration file:", exc)
+        return False
+
+    try:
+        state.FU_config = config['FUs']
+        state.ROBentries = config['ROBentries']
+        state.CDBbufferLength = config['CDBbufferLength']
+    except:
+        print('ERROR: Ensure hardare config parameters exist')
+        return False
+
+    # init memory if initialization file exits
+    if 'memInitFile' in config:
+        if not init_memory(state, config['memInitFile']):
+            return False
+
+    # init registers if init file exists
+    if 'regInitFile' in config:
+        if not init_registers(state, config['regInitFile']):
+            return False
+
+    if 'instFile' in config:
+        if not parse_instructions(state, config['instFile']):
+            return False
+        else:
+            return True
+    else:
+        print('ERROR: An instruction init file must be defined in the config')
+        return False

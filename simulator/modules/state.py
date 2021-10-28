@@ -1,5 +1,8 @@
 """ Defines the relevant objects for saving the state of the simulator"""
 
+from typing import Dict
+
+
 class State:
     """ Simulator State Object"""
 
@@ -18,5 +21,9 @@ class State:
         self.instructions = []
 
         self.PC = 0     # program counter
+
+        self.FU_config = {}
+        self.ROBentries = 0
+        self.CDBbufferLength = 0
 
         # TODO: Add more here as needed ...
