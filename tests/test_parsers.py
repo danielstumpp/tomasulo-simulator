@@ -103,5 +103,16 @@ def test_parse_instructions_good():
     fn = 'tests/inputs/inst/inst1.asm'
     state = State()
     assert psr.parse_instructions(state, fn) == True
+    assert len(state.instructions) == 3
+    assert state.instructions[0].type == 'ADD.D'
+    assert state.instructions[0].Fd == 'F1' 
+    assert state.instructions[0].Fs == 'F2'
+    assert state.instructions[0].Ft == 'F3'
+    assert state.instructions[1].type == 'LD'
+    assert state.instructions[1].Fa == 'F4'
+    assert state.instructions[1].offset == 8
+    assert state.instructions[1].Ra == 'R10'
+    assert state.instructions[2].offset == -3
+    assert state.instructions[2].type == 'BNE'
     
 
