@@ -56,6 +56,7 @@ def commit_stage(state: State):
     1.3 Fire off exceptions.
     1.4 Update instruction metadata with timing, add to timing data structure
     '''
+    pass
 
 
 def clock_tick(state: State):
@@ -65,7 +66,7 @@ def clock_tick(state: State):
     issue_stage(state)
     execute_stage(state)
     memory_stage(state)
-    writeback_stage(stage)
+    writeback_stage(state)
     commit_stage(state)
 
 if __name__ == '__main__':
@@ -73,3 +74,4 @@ if __name__ == '__main__':
     1. Read in configuration and parse instructions
 
     '''
+    pass
