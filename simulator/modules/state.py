@@ -26,4 +26,10 @@ class State:
         self.ROBentries = 0
         self.CDBbufferLength = 0
 
+        self.clock_cycle = 0
+
         # TODO: Add more here as needed ...
+
+        # ROB object
+        # RAT
+        # Functional units

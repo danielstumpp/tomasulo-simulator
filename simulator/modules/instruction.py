@@ -19,3 +19,7 @@ class Instruction:
         self.immediate = None
         self.offset = None
         self.type = None
+
+        # Metadata
+        self.start_cycle = None
+        self.end_cycle = None
