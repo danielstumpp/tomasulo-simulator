@@ -1,4 +1,4 @@
-from modules.state import State
+from simulator.modules.state import State
 
 class RSEntry:
     def __init__(self, instruction, clock_cycle, ex_cycles):

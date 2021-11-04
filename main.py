@@ -1,9 +1,10 @@
-import argparse
-from modules.state import State
-import modules.parsers
 
-# from modules.fetch import fetch_instruction, FU_mapping
-# from modules.func_units import initialize_units
+import argparse
+from simulator.modules.state import State
+import simulator.modules.parsers
+
+from simulator.modules.fetch import fetch_instruction, FU_mapping
+from simulator.modules.func_units import initialize_units
 
 
 def issue_stage(state: State):

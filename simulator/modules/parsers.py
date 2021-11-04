@@ -6,9 +6,6 @@ import yaml
 import csv
 
 
-
-
-
 def init_memory(state: State, mem_file: str):
     """ Initializes the memory of the state based on the provided memory file"""
     # read in memory file as csv
