@@ -9,7 +9,7 @@ class RSEntry:
         self.cycle_end = None
 
     def is_complete(self, clock_cycle):
-        return clock_cycle >= cycle_end
+        return clock_cycle >= self.cycle_end
 
     def is_ready(self):
         pass
@@ -32,7 +32,7 @@ class FunctionalUnit:
         '''
         Return index of first available RS, None otherwise
         '''
-        for i in range(numRS):
+        for i in range(self.numRS):
             if self.RS[i] is None:
                 return i
         return None

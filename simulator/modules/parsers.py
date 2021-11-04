@@ -215,7 +215,7 @@ def parse_instructions(state: State, asm_file: str):
             print('ERROR: Invalid Instruction -> line ', i+1)
             return False
     return True
-    
+
 
 def load_config(state: State, config_file: str):
     """ Loads the specified yaml configuration file and returns loaded initial state by ref"""
@@ -237,7 +237,6 @@ def load_config(state: State, config_file: str):
         state.FU_config = config['FUs']
         state.ROBentries = config['ROBentries']
         state.CDBbufferLength = config['CDBbufferLength']
-        initialize_units(state)
     except:
         print('ERROR: Ensure hardare config parameters exist')
         return False
