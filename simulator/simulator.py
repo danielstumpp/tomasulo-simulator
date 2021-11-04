@@ -1,4 +1,8 @@
+import argparse
+from modules.parsers import load_config
 from modules.state import State
+from modules.issue import fetch_instruction, FU_mapping
+
 
 def issue_stage(state: State):
     '''
@@ -8,7 +12,18 @@ def issue_stage(state: State):
     1.4 Put instruction in ROB, updating RAT to point output register to ROB
     1.5 Increment PC if instruction was issued
     '''
-    pass
+    instruction = fetch_instruction(state)
+    if not instruction:
+        return False
+
+    # Select the FU this instruction goes to
+    FU = FU_mapping(state, instruction)
+
+
+
+
+
+
 
 
 def execute_stage(state: State):
@@ -25,6 +40,7 @@ def execute_stage(state: State):
         clearing up RS station.
     '''
     pass
+
 
 
 def memory_stage(state: State):
@@ -69,9 +85,25 @@ def clock_tick(state: State):
     writeback_stage(state)
     commit_stage(state)
 
-if __name__ == '__main__':
-    '''
-    1. Read in configuration and parse instructions
+    # Check if program has finished
 
-    '''
-    pass
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config_file')
+    args = parser.parse_args()
+    config_file = args.config_file
+
+    state = State()
+    config_success = load_config(state, config_file)
+    if not config_success:
+        print('Config error. Exiting program')
+        exit(0)
+
+    print(state)
+    while True:
+        clock_tick(state)
+
+
+if __name__ == '__main__':
+    main()

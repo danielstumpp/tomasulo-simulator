@@ -2,7 +2,6 @@
 
 from typing import Dict
 
-
 class State:
     """ Simulator State Object"""
 
@@ -29,7 +28,18 @@ class State:
         self.clock_cycle = 0
 
         # TODO: Add more here as needed ...
+        self.ROB = None
 
-        # ROB object
-        # RAT
-        # Functional units
+        self.IA = None
+        self.FPA = None
+        self.FPM = None
+        self.LSU = None
+
+        seelf.RAT = None
+
+
+    def __str__(self):
+        '''
+        Print function
+        '''
+        pass
