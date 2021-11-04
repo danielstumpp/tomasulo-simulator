@@ -19,7 +19,11 @@ class Instruction:
         self.immediate = None
         self.offset = None
         self.type = None
+        self.str = None
 
         # Metadata
         self.start_cycle = None
         self.end_cycle = None
+
+    def __str__(self) -> str:
+        return self.str
