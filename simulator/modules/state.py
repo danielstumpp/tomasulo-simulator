@@ -35,7 +35,7 @@ class State:
         self.FPM = None
         self.LSU = None
 
-        seelf.RAT = None
+        self.RAT = None
 
 
     def __str__(self):

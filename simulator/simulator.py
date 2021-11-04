@@ -2,6 +2,7 @@ import argparse
 from modules.parsers import load_config
 from modules.state import State
 from modules.issue import fetch_instruction, FU_mapping
+from modules.func_units import initialize_units
 
 
 def issue_stage(state: State):
@@ -18,11 +19,6 @@ def issue_stage(state: State):
 
     # Select the FU this instruction goes to
     FU = FU_mapping(state, instruction)
-
-
-
-
-
 
 
 
@@ -96,6 +92,7 @@ def main():
 
     state = State()
     config_success = load_config(state, config_file)
+    initialize_units(state)
     if not config_success:
         print('Config error. Exiting program')
         exit(0)

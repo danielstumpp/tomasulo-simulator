@@ -1,5 +1,7 @@
+from modules.state import State
+
 class RSEntry:
-    def __init__(self, intruction, clock_cycle, ex_cycles):
+    def __init__(self, instruction, clock_cycle, ex_cycles):
         self.instruction = instruction
 
         self.executing = False
@@ -40,3 +42,14 @@ class FunctionalUnit:
         Each FU implements this to do sub, add, mult etc.
         '''
         pass
+
+
+def initialize_units(state: State):
+    IA_conf = state.FU_config['IA']
+    state.IA = FunctionalUnit(IA_conf['numRS'], IA_conf['exCycles'], IA_conf['instances'])
+    FPA_conf = state.FU_config['FPA']
+    state.FPA = FunctionalUnit(FPA_conf['numRS'], FPA_conf['exCycles'], FPA_conf['instances'])
+    FPM_conf = state.FU_config['FPM']
+    state.FPM = FunctionalUnit(FPM_conf['numRS'], FPM_conf['exCycles'], FPM_conf['instances'])
+
+    # TODO: Initialize ROB and CDB buffers

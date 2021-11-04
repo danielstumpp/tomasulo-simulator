@@ -2,7 +2,6 @@
 from simulator.modules.state import State
 from simulator.modules.instruction import Instruction
 from simulator.modules.instruction import VALID_INSTRUCTIONS
-from simulator.modules.func_units import FunctionalUnit
 import yaml
 import csv
 
@@ -216,18 +215,7 @@ def parse_instructions(state: State, asm_file: str):
             print('ERROR: Invalid Instruction -> line ', i+1)
             return False
     return True
-
-
-def initialize_units(state: State):
-    IA_conf = state.FU_config['IA']
-    state.IA = FunctionalUnit(IA_conf['numRS'], IA_conf['exCycles'], IA_conf['instances'])
-    FPA_conf = state.FU_config['FPA']
-    state.FPA = FunctionalUnit(FPA_conf['numRS'], FPA_conf['exCycles'], FPA_conf['instances'])
-    FPM_conf = state.FU_config['FPM']
-    state.FPM = FunctionalUnit(FPM_conf['numRS'], FPM_conf['exCycles'], FPM_conf['instances'])
-
-    # TODO: Initialize ROB and CDB buffers
-    assert False
+    
 
 def load_config(state: State, config_file: str):
     """ Loads the specified yaml configuration file and returns loaded initial state by ref"""
