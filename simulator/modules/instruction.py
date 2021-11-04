@@ -21,5 +21,32 @@ class Instruction:
         self.type = None
 
         # Metadata
-        self.start_cycle = None
-        self.end_cycle = None
+        self.issue_cycle = None
+        self.execute_cycle_start = None
+        self.execute_cycle_end = None
+        self.mem_cycle = None
+        self.writeback_cycle = None
+        self.commit_cycle = None
+
+        self.ROB_dest = None
+        self.result = None
+
+
+    def get_instruction_registers(self):
+        '''
+        return (Destination, Operand1, Operand2) tuple
+        for any instruction.
+        '''
+        type = self.type
+        if type in ['BEQ', 'BNE']:
+            return None, self.Rs, self.Rt
+        if type in ['ADD', 'SUB']:
+            return self.Rd, self.Rs, self.Rt
+        if type == 'ADDI':
+            return self.Rs, self.Rt, None
+        if type in ['ADD.D', 'SUB.D', 'MULT.D']:
+            return self.Fd, self.Fs, self.Ft
+        if type == 'SD':
+            return None, self.Fa, self.Ra
+        if type == 'LD':
+            return self.Fa, self.Ra, None

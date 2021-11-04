@@ -23,7 +23,7 @@ class State:
 
         self.FU_config = {}
         self.ROBentries = 0
-        self.CDBbufferLength = 0
+        self.CDBbufferLength = 0 # same for all FU
 
         self.clock_cycle = 0
 
@@ -35,7 +35,7 @@ class State:
         self.FPM = None
         self.LSU = None
 
-        self.RAT = None
+        self.RAT = {rk:rk for rk in register_keys}
 
 
     def __str__(self):

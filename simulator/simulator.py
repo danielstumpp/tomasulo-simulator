@@ -1,10 +1,14 @@
 
 import argparse
+from collections import deqeue
+
 from simulator.modules.state import State
 from simulator.modules.parsers import load_config
 
 from simulator.modules.fetch import fetch_instruction, FU_mapping
-from simulator.modules.func_units import initialize_units
+from simulator.modules.func_units import initialize_units, RSEntry
+
+from simulator.modules.ROB import ROB
 
 
 def issue_stage(state: State):
@@ -17,11 +21,62 @@ def issue_stage(state: State):
     '''
     instruction = fetch_instruction(state)
     if not instruction:
+        # PC is greater than length of instructions
         return False
 
     # Select the FU this instruction goes to
     FU = FU_mapping(state, instruction)
+    rs_index = FU.available_RS()
+    if rs_index is None:
+        # RS is not available
+        return False
 
+    if state.ROB.is_full():
+        return False
+
+    instruction.issue_cycle = state.clock_cycle
+    rs_entry = RSEntry(instruction, FU.exCycles)
+
+    # Look at RAT
+    dest, op1, op2 = instruction.get_instruction_registers()
+    if op1 is not None:
+        rs_entry.op1_ptr = state.RAT[op1]
+    if op2 is not None:
+        rs_entry.op2_ptr = state.RAT[op2]
+
+    # Fetch values that are ready
+    if rs_entry.op1_ptr in state.registers.keys():
+        rs_entry.op1_val = state.registers[rs_entry.op1_ptr]
+        rs_entry.op1_ready = True
+    elif 'ROB' in rs_entry.op1_ptr:
+        # Check the ROB
+        rob_idx = int(rs_entry.op1_ptr[3:])
+        if state.ROB.entries[rob_idx].fininshed:
+            rs_entry.op1_val = state.ROB.entries[rob_idx].instruction.result
+            rs_entry.op1_ready = True
+
+    if rs_entry.op2_ptr in state.registers.keys():
+        rs_entry.op2_val = state.registers[rs_entry.op2_ptr]
+        rs_entry.op2_ready = True
+    elif 'ROB' in rs_entry.op2_ptr:
+        # Check the ROB
+        rob_idx = int(rs_entry.op2_ptr[3:])
+        if state.ROB.entries[rob_idx].fininshed:
+            rs_entry.op2_val = state.ROB.entries[rob_idx].instruction.result
+            rs_entry.op2_ready = True
+
+    # Put RS entry into RS array in FU
+    FU.RS[rs_index] = rs_entry
+
+    # Put it in the ROB
+    rob_idx = state.ROB.allocate_new()
+    instruction.ROB_dest = rob_idx
+
+    # Touch the RAT, points to ROB
+    state.RAT[dest] = f'ROB{rob_idx}'
+
+    # Increment PC, change when we do branches
+    state.PC += 1
 
 
 def execute_stage(state: State):
