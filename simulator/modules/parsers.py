@@ -98,9 +98,9 @@ def check_valid_reg(reg: str):
 
 def validate_instruction(inst_list: list, inst: Instruction) -> bool:
     """ Validates a single instruction passed in as a list in the format [OP, R1, R2/Offset, R3/immediate"""
+
     op = str(inst_list[0]).strip().upper()
     if op not in VALID_INSTRUCTIONS:
-        print('here')
         return False
 
     inst.type = op
@@ -185,6 +185,7 @@ def parse_instructions(state: State, asm_file: str):
             r3 = line[3].strip().upper()
 
             inst = Instruction()
+            inst.str = ', '.join(line)
             valid = validate_instruction([op, r1, r2, r3], inst)
             if valid:
                 state.instructions.append(inst)
@@ -202,6 +203,7 @@ def parse_instructions(state: State, asm_file: str):
                 return False
 
             inst = Instruction()
+            inst.str = ', '.join(line)
             valid = validate_instruction([op, r1, offset, ra], inst)
             if valid:
                 state.instructions.append(inst)
