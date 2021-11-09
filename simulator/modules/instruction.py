@@ -22,7 +22,6 @@ class Instruction:
         self.str = None
 
         # Metadata
-<<<<<<< HEAD
         self.issue_cycle = None
         self.execute_cycle_start = None
         self.execute_cycle_end = None
@@ -52,10 +51,7 @@ class Instruction:
             return None, self.Fa, self.Ra
         if type == 'LD':
             return self.Fa, self.Ra, None
-=======
-        self.start_cycle = None
-        self.end_cycle = None
+
 
     def __str__(self) -> str:
         return self.str
->>>>>>> 3f9a41126c3f339237c0200a036d0fffe177019f
