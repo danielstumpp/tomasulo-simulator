@@ -19,7 +19,7 @@ class ROB:
         Creates new ROBEntry
         Returns index of entry
         '''
-        assert not is_full, 'You cannot add to a full ROB'
+        assert not self.is_full(), 'You cannot add to a full ROB'
 
         new = ROBEntry()
         self.entries[self.write_idx] = new
