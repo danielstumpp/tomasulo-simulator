@@ -25,7 +25,8 @@ class RSEntry:
             op2_val = instruction.immediate
             op2_ready = True
 
-    def issue_to_ALU(self, clock_cycle)
+    def issue_to_ALU(self, clock_cycle):
+        pass
 
     def is_complete(self, clock_cycle):
         return clock_cycle > self.instruction.execute_cycle_end
