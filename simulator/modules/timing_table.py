@@ -61,7 +61,10 @@ class TimingTable:
             self.write_back.append(str(line[4].strip()))
             self.commit.append(str(line[5].strip()))
 
-    def __eq__(self, other: TimingTable) -> bool:
+    def __eq__(self, other) -> bool:
+        if type(self) != type(other):
+            return False
+
         len_valid = ((len(self.issue) == len(other.issue)) and
                      (len(self.ex_start) == len(other.ex_start)) and
                      (len(self.ex_end) == len(other.ex_end)) and
