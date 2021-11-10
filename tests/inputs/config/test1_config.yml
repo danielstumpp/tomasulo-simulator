@@ -4,7 +4,7 @@ name: test1_config
 # Functional Unit Resources
 FUs:
   # integer adders
-  IA: 
+  IA:
     numRS: 2
     exCycles: 1
     memCycles: 0
@@ -21,8 +21,8 @@ FUs:
     instances: 1
   LSU:
     numRS: 2
-    exCycles: 20
-    memCycles: 0
+    exCycles: 1
+    memCycles: 10
     instances: 1
 
 ROBentries: 128

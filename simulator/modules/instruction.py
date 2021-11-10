@@ -25,7 +25,8 @@ class Instruction:
         self.issue_cycle = None
         self.execute_cycle_start = None
         self.execute_cycle_end = None
-        self.mem_cycle = None
+        self.mem_cycle_start = None
+        self.mem_cycle_end = None
         self.writeback_cycle = None
         self.commit_cycle = None
 

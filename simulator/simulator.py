@@ -26,9 +26,8 @@ def issue_stage(state: State):
 
     # Select the FU this instruction goes to
     FU = FU_mapping(state, instruction)
-    rs_index = FU.available_RS()
-    if rs_index is None:
-        # RS is not available
+
+    if not FU.available_RS():
         return False
 
     if state.ROB.is_full():
@@ -66,14 +65,15 @@ def issue_stage(state: State):
             rs_entry.op2_ready = True
 
     # Put RS entry into RS array in FU
-    FU.RS[rs_index] = rs_entry
+    FU.RS.append(rs_entry)
 
     # Put it in the ROB
     rob_idx = state.ROB.allocate_new()
     instruction.ROB_dest = rob_idx
 
     # Touch the RAT, points to ROB
-    state.RAT[dest] = f'ROB{rob_idx}'
+    if dest is not None:
+        state.RAT[dest] = f'ROB{rob_idx}'
 
     # Increment PC, change when we do branches
     state.PC += 1
@@ -92,9 +92,16 @@ def execute_stage(state: State):
     3.2 Move instruction to locally buffered CDB queue (if there is space),
         clearing up RS station.
     '''
-    pass
 
+    for FU in [state.IA, state.FPA, state.FPM, state.LSU]:
+        # Clear out completed values, free up reservation station, add to CDB buf
+        FU.check_done(state.clock_cycle)
 
+    for FU in [state.IA, state.FPA, state.FPM, state.LSU]:
+        # Allocate instructions to instances
+        FU.try_issue(state.clock_cycle)
+
+    # TODO: Branches?
 
 def memory_stage(state: State):
     '''
@@ -105,7 +112,28 @@ def memory_stage(state: State):
     2. Handle ALU computation: calculate address for oldest instruction that has
         ready operands. Mark this as a cycle in the execute stage.
     '''
-    pass
+    # Free up the memory unit if the busy instruction finished this cycle
+    state.LSU.check_memory_done(state)
+
+    if not state.LSU.memory_busy and len(state.LSU.RS) > 0:
+        rs = state.LSU.next_mem_rs()
+        if rs is not None and state.LSU.rs_mem_is_ready(rs):
+            # Stores only go to memory in the commit stage
+            if rs.instruction.type == 'SD':
+                if state.ROB.head_idx == rs.instruction.ROB_dest:
+                    state.ROB.entries[state.ROB.head_idx].instruction = rs.instruction
+                    # ROB head is this store instruction
+                    state.LSU.memory_busy = True
+                    rs.instruction.mem_cycle_start = state.clock_cycle
+                    rs.instruction.mem_cycle_end = state.clock_cycle + state.LSU.memCycles
+
+
+
+            state.LSU.memory_busy = True
+            rs.instruction.mem_cycle_start = state.clock_cycle
+            rs.instruction.mem_cycle_end = state.clock_cycle + state.LSU.memCycles
+
+
 
 
 def writeback_stage(state: State):
