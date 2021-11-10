@@ -24,7 +24,7 @@ class State:
 
         self.FU_config = {}
         self.ROBentries = 0
-        self.CDBbufferLength = 0 # same for all FU
+        self.CDBbufferLength = 0  # same for all FU
 
         self.clock_cycle = 0
 
@@ -36,12 +36,10 @@ class State:
         self.FPM = None
         self.LSU = None
 
-        self.RAT = {rk:rk for rk in register_keys}
+        self.RAT = {rk: rk for rk in register_keys}
 
-    def __str__(self):
-        '''
-        Print function
-        '''
+    def get_instruction_table(self) -> str:
+        """Return string with table of instructions in state"""
 
         inst_table = PrettyTable(['#', 'Instruction', 'DONE'])
         for i in range(len(self.instructions)):
@@ -50,17 +48,24 @@ class State:
             else:
                 done = ' '
             inst_table.add_row(
-                ['I{}'.format(i), self.instructions[i].str.upper(),done])
+                ['I{}'.format(i), self.instructions[i].str.upper(), done])
 
         inst_table.align['Instruction'] = "l"
-        inst_block = inst_table.get_string()
+        return inst_table.get_string()
 
+    def get_memory_table(self) -> str:
+        """Return string with memory table of state memory"""
         mem_table = PrettyTable(
             ['Byte Address', 'Value', '', 'Byte Address ', 'Value '])
         for i in range(int(len(self.memory)/2)):
             mem_table.add_row(
                 [str(4*i), '\033[94m {} \033[0m'.format(str(self.memory[i])), '',
                  str(4*(i + 32)), '\033[94m {} \033[0m'.format(str(self.memory[i + 32]))])
+
+        return mem_table.get_string()
+
+    def get_register_table(self) -> str:
+        """Return string of register table for state"""
 
         reg_table = PrettyTable(
             ['Integer Reg', 'Value', '', 'Float Reg', 'Value '])
@@ -69,9 +74,25 @@ class State:
                 ['R{}'.format(i), '\033[94m {} \033[0m'.format(str(int(self.registers['R{}'.format(i)]))), '',
                  'F{}'.format(i), '\033[94m {} \033[0m'.format(float(self.registers['F{}'.format(i)]))])
 
+        return reg_table.get_string()
 
-        data_report = PrettyTable([' ----- Register States -----', '----- Memory States -----'])
-        data_report.add_row([reg_table.get_string(), mem_table.get_string()])
+    def get_RAT_table(self) -> str:
+        tbl = PrettyTable(['Arch Reg', 'Mapping ', '', 'Arch Reg ', 'Mapping'])
+        for i in range(32):
+            tbl.add_row(['R{}'.format(i), self.RAT['R{}'.format(i)], '',
+                         'F{}'.format(i), self.RAT['F{}'.format(i)]])
 
-        report = data_report.get_string() + '\n' + inst_block
+        return tbl.get_string()
+
+    def get_ROB_table(self) -> str:
+        return self.ROB.__str__()
+
+    def __str__(self):
+        '''
+        Print function
+        '''
+
+        # TODO: combine all relavent prints for massive print
+
+        report = 'TODO'
         return report
