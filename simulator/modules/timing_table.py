@@ -1,7 +1,5 @@
 """Timing table class and related parsers"""
 
-from _typeshed import Self
-from os import read
 from simulator.modules.instruction import Instruction
 from simulator.modules.state import State
 import csv
@@ -11,18 +9,19 @@ class TimingTable:
     """Timing table class for easy testing and comparison"""
 
     def __init__(self) -> None:
-        self.issue = list
-        self.ex_start = list
-        self.ex_end = list
-        self.mem = list
-        self.write_back = list
-        self.commit = list
+        self.issue = []
+        self.ex_start = []
+        self.ex_end = []
+        self.mem = []
+        self.write_back = []
+        self.commit = []
 
     def load_from_state(self, state: State) -> bool:
         """Loads the Timing table from an existing state"""
-
-        instructions = state.instructions
-        for inst in instructions:
+        
+        
+        for i in range(len(state.instructions)):
+            inst = state.instructions[i]
             self.issue.append(inst.issue_cycle)
             self.ex_start.append(inst.execute_cycle_start)
             self.ex_end.append(inst.execute_cycle_end)
@@ -88,10 +87,10 @@ class TimingTable:
         else:
             return False
 
-    def _standardize_format(self, ls: list) -> list:
-        self.issue = [str(v).replace('-', None) for v in self.issue]
-        self.ex_start = [str(v).replace('-', None) for v in self.ex_start]
-        self.ex_end = [str(v).replace('-', None) for v in self.ex_end]
-        self.mem = [str(v).replace('-', None) for v in self.mem]
-        self.write_back = [str(v).replace('-', None) for v in self.write_back]
-        self.commit = [str(v).replace('-', None) for v in self.commit]
+    def _standardize_format(self) -> None:
+        self.issue = [str(v).replace('-', 'None') for v in self.issue]
+        self.ex_start = [str(v).replace('-', 'None') for v in self.ex_start]
+        self.ex_end = [str(v).replace('-', 'None') for v in self.ex_end]
+        self.mem = [str(v).replace('-', 'None') for v in self.mem]
+        self.write_back = [str(v).replace('-', 'None') for v in self.write_back]
+        self.commit = [str(v).replace('-', 'None') for v in self.commit]
