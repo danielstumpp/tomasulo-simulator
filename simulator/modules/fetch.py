@@ -18,4 +18,6 @@ def FU_mapping(state: State, instruction: Instruction):
         return state.FPA
     if type in ['MULT.D']:
         return state.FPM
+    if type in ['LD', 'SD']:
+        return state.LSU
     assert False, 'that instruction type is not implemeted'
