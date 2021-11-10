@@ -48,7 +48,7 @@ class MemoryUnit:
     def try_issue(self, clock_cycle):
         ready_rs = [rs_entry for rs_entry in self.RS if self.rs_is_ready(rs_entry)]
         ready_rs.sort(key=lambda x: x.issue_cycle)
-        if ALU_free and len(ready_rs) > 0:
+        if self.ALU_free and len(ready_rs) > 0:
             rs = ready_rs[0]
             rs.executing = True
             rs.instruction.execute_cycle_start = clock_cycle
