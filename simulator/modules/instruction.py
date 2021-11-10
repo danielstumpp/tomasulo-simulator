@@ -20,6 +20,7 @@ class Instruction:
         self.offset = None
         self.type = None
         self.str = None
+        self.ID = None
 
         # Metadata
         self.issue_cycle = None

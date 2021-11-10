@@ -186,6 +186,7 @@ def parse_instructions(state: State, asm_file: str):
 
             inst = Instruction()
             inst.str = ', '.join(line)
+            inst.ID = 'I{}'.format(i)
             valid = validate_instruction([op, r1, r2, r3], inst)
             if valid:
                 state.instructions.append(inst)

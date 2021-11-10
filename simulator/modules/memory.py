@@ -78,8 +78,6 @@ class MemoryUnit:
                     if rs.instruction.type == 'SD':
                         state.memory[rs.mem_address] = rs.op1_val
 
-
-
     def alloc_instance(self):
         self.ALU_free = False
 

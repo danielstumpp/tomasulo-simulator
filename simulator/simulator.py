@@ -178,5 +178,5 @@ def run(config_file):
     initialize_units(state)
 
     print(state)
-    while True:
+    while True: #TODO: Probably want some break condition here
         clock_tick(state)
