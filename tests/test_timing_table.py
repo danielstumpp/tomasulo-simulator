@@ -1,6 +1,7 @@
 from simulator.modules.timing_table import TimingTable
 from simulator.modules.state import State
 import simulator.modules.parsers as psr
+from simulator.modules.func_units import initialize_units
 
 def test_good_timing_table_comparison():
     fn = 'tests/inputs/config/test1_config.yml'
@@ -46,5 +47,6 @@ def test_dummy_csv_tt_wrong():
     tt1.load_from_state(state)
     tt2 = TimingTable()
     tt2.load_from_file(ttfn)
+    initialize_units(state)
     assert tt1 != tt2
 

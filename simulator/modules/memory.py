@@ -23,7 +23,7 @@ class MemoryUnit:
                 return rs
 
     def available_RS(self):
-        return len(self.ls_queue) < self.numRS
+        return len(self.RS) < self.numRS
 
     def rs_mem_is_ready(self, rs):
         '''

@@ -87,6 +87,15 @@ class State:
     def get_ROB_table(self) -> str:
         return self.ROB.__str__()
 
+    def get_RS_table(self) -> str:
+        output = 'Integer Adder RS\n'
+        output += self.IA.__str__() + '\n\n'
+        output += 'FP Adder RS\n'
+        output += self.FPA.__str__() + '\n\n'
+        output += 'FP Multiply RS\n'
+        output += self.FPM.__str__() + '\n\n'
+        return output
+
     def __str__(self):
         '''
         Print function

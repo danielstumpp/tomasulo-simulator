@@ -2,6 +2,9 @@ from simulator.modules.state import State
 from simulator.modules.ROB import ROB
 from simulator.modules.memory import MemoryUnit
 
+from prettytable import PrettyTable
+
+
 class RSEntry:
     def __init__(self, instruction, ex_cycles):
         '''
@@ -60,6 +63,15 @@ class FunctionalUnit:
         self.CDB_capacity = CDBbufferLength
         self.CDB_buffer = []
 
+    def __str__(self) -> str:
+        """ print functional unit table """
+        tbl = PrettyTable(['Op', 'Dest-Tag', 'Tag1', 'Tag2', 'Val1', 'Val2'])
+
+        for rs in self.RS:
+            tbl.add_row([rs.instruction.str, 'ROB{}'.format(rs.instruction.ROB_dest), 
+            str(rs.op1_ptr), str(rs.op2_ptr), str(rs.op1_val), str(rs.op2_val)])
+
+        return tbl.get_string()
 
     def available_RS(self):
         '''
@@ -102,7 +114,6 @@ class FunctionalUnit:
 
                 self.dealloc_instance()
 
-
     def alloc_instance(self):
         # To be overwritten by integer ALU
         pass
@@ -116,7 +127,7 @@ class FunctionalUnit:
             res = rs_entry.op1_val + rs_entry.op2_val
         elif itype in ['SUB', 'SUB.D']:
             res = rs_entry.op1_val - rs_entry.op2_val
-        elif itype in ['MULT.D'] :
+        elif itype in ['MULT.D']:
             res = rs_entry.op1_val * rs_entry.op2_val
         else:
             assert False
@@ -138,12 +149,16 @@ class IntegerUnit(FunctionalUnit):
 
 def initialize_units(state: State):
     IA_conf = state.FU_config['IA']
-    state.IA = IntegerUnit(IA_conf['numRS'], IA_conf['exCycles'], IA_conf['instances'], state.CDBbufferLength)
+    state.IA = IntegerUnit(
+        IA_conf['numRS'], IA_conf['exCycles'], IA_conf['instances'], state.CDBbufferLength)
     FPA_conf = state.FU_config['FPA']
-    state.FPA = FunctionalUnit(FPA_conf['numRS'], FPA_conf['exCycles'], FPA_conf['instances'], state.CDBbufferLength)
+    state.FPA = FunctionalUnit(
+        FPA_conf['numRS'], FPA_conf['exCycles'], FPA_conf['instances'], state.CDBbufferLength)
     FPM_conf = state.FU_config['FPM']
-    state.FPM = FunctionalUnit(FPM_conf['numRS'], FPM_conf['exCycles'], FPM_conf['instances'], state.CDBbufferLength)
+    state.FPM = FunctionalUnit(
+        FPM_conf['numRS'], FPM_conf['exCycles'], FPM_conf['instances'], state.CDBbufferLength)
     LSU_conf = state.FU_config['LSU']
-    state.LSU = MemoryUnit(LSU_conf['numRS'], LSU_conf['exCycles'], LSU_conf['memCycles'], LSU_conf['instances'], state.CDBbufferLength)
+    state.LSU = MemoryUnit(LSU_conf['numRS'], LSU_conf['exCycles'],
+                           LSU_conf['memCycles'], LSU_conf['instances'], state.CDBbufferLength)
 
     state.ROB = ROB(state.ROBentries)
