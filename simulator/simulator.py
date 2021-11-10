@@ -1,6 +1,5 @@
 
 import argparse
-from collections import deqeue
 
 from simulator.modules.state import State
 from simulator.modules.parsers import load_config

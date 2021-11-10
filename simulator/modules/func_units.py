@@ -82,7 +82,7 @@ class FunctionalUnit:
     def try_issue(self, clock_cycle):
         ready_rs = [rs_entry for rs_entry in self.RS if rs_entry.is_ready()]
         ready_rs.sort(key=lambda x: x.issue_cycle)
-        for free_idx in range(min(self.free_instances, len(ready_rs)):
+        for free_idx in range(min(self.free_instances, len(ready_rs))):
             rs = ready_rs[free_idx]
             rs.executing = True
             rs.instruction.execute_cycle_start = clock_cycle
@@ -124,8 +124,8 @@ class FunctionalUnit:
 
 
 class IntegerUnit(FunctionalUnit):
-    def __init__(self, numRS, exCycles, instances):
-        super().__init(numRS, exCycles, instances)
+    def __init__(self, numRS, exCycles, instances, CDBbufferLength):
+        super().__init__(numRS, exCycles, instances, CDBbufferLength)
 
     def alloc_instance(self):
         self.free_instances -= 1

@@ -1,6 +1,5 @@
 """ Defines the relevant objects for saving the state of the simulator"""
 
-from typing import Dict
 from prettytable import PrettyTable
 
 

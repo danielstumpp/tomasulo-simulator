@@ -86,7 +86,7 @@ class MemoryUnit:
     def dealloc_instance(self):
         set.ALU_free = True
 
-    def calculate_result(rs):
+    def calculate_result(self, rs):
         if rs.instruction.type == 'LD':
             return rs.op1_val + rs.instruction.offset
         if rs.instruction.type == 'SD':
