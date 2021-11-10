@@ -47,3 +47,4 @@ def test_dummy_csv_tt_wrong():
     tt2 = TimingTable()
     tt2.load_from_file(ttfn)
     assert tt1 != tt2
+
