@@ -19,7 +19,7 @@ class MemoryUnit:
         Get oldest RS that hasn't already gone to memory
         '''
         for rs in self.RS:
-            rs.instruction.mem_cycle_start is None:
+            if rs.instruction.mem_cycle_start is None:
                 return rs
 
     def available_RS(self):

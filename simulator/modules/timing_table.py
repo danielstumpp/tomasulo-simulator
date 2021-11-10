@@ -13,7 +13,8 @@ class TimingTable:
         self.issue = []
         self.ex_start = []
         self.ex_end = []
-        self.mem = []
+        self.mem_start = []
+        self.mem_end = []
         self.write_back = []
         self.commit = []
 
@@ -25,7 +26,8 @@ class TimingTable:
         len_valid = ((len(self.issue) == len(other.issue)) and
                      (len(self.ex_start) == len(other.ex_start)) and
                      (len(self.ex_end) == len(other.ex_end)) and
-                     (len(self.mem) == len(other.mem)) and
+                     (len(self.mem_start) == len(other.mem_start)) and
+                     (len(self.mem_end) == len(other.mem_end)) and
                      (len(self.write_back) == len(other.write_back)) and
                      (len(self.commit) == len(other.commit)))
 
@@ -37,7 +39,8 @@ class TimingTable:
             vals_valid = ((self.issue == other.issue) and
                           (self.ex_start == other.ex_start) and
                           (self.ex_end == other.ex_end) and
-                          (self.mem == other.mem) and
+                          (self.mem_start == other.mem_start) and
+                          (self.mem_end == other.mem_end) and
                           (self.write_back == other.write_back) and
                           (self.commit == other.commit))
 
@@ -52,7 +55,7 @@ class TimingTable:
 
         for i in range(len(self.issue)):
             row = ['I{}'.format(i), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
-                   self.mem[i], self.write_back[i], self.commit[i]]
+                   self.mem_start[i]+'-'+self.mem_end[i], self.write_back[i], self.commit[i]]
             tbl.add_row(row)
 
         return tbl.get_string()
@@ -65,7 +68,8 @@ class TimingTable:
             self.issue.append(inst.issue_cycle)
             self.ex_start.append(inst.execute_cycle_start)
             self.ex_end.append(inst.execute_cycle_end)
-            self.mem.append(inst.mem_cycle)
+            self.mem_start.append(inst.mem_cycle_start)
+            self.mem_end.append(inst.mem_cycle_end)
             self.write_back.append(inst.writeback_cycle)
             self.commit.append(inst.commit_cycle)
 
@@ -89,22 +93,24 @@ class TimingTable:
 
         reader_list = list(reader)
         for line in reader_list:
-            if len(line) != 6:
+            if len(line) != 7:
                 print('ERROR: invalid timing table from file')
                 return False
 
             self.issue.append(str(line[0].strip()))
             self.ex_start.append(str(line[1].strip()))
             self.ex_end.append(str(line[2].strip()))
-            self.mem.append(str(line[3].strip()))
-            self.write_back.append(str(line[4].strip()))
-            self.commit.append(str(line[5].strip()))
+            self.mem_start.append(str(line[3].strip()))
+            self.mem_end.append(str(line[4].strip()))
+            self.write_back.append(str(line[5].strip()))
+            self.commit.append(str(line[6].strip()))
 
     def _standardize_format(self) -> None:
         self.issue = [str(v).replace('None', '-') for v in self.issue]
         self.ex_start = [str(v).replace('None', '-') for v in self.ex_start]
         self.ex_end = [str(v).replace('None', '-') for v in self.ex_end]
-        self.mem = [str(v).replace('None', '-') for v in self.mem]
+        self.mem_start = [str(v).replace('None', '-') for v in self.mem_start]
+        self.mem_end = [str(v).replace('None', '-') for v in self.mem_end]
         self.write_back = [str(v).replace('None', '-')
                            for v in self.write_back]
         self.commit = [str(v).replace('None', '-') for v in self.commit]

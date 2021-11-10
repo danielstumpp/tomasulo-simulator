@@ -20,7 +20,7 @@ def test_bad_timing_table_comparison():
     tt1 = TimingTable()
     tt1.load_from_state(state)
     tt2 = TimingTable()
-    state.instructions[1].mem_cycle = 2
+    state.instructions[1].mem_cycle_start = 2
     tt2.load_from_state(state)
     assert tt1 != tt2
 
