@@ -1,13 +1,13 @@
 
 import argparse
 
-from simulator.modules.state import State
-from simulator.modules.parsers import load_config
+from .modules.state import State
+from .modules.parsers import load_config
 
-from simulator.modules.fetch import fetch_instruction, FU_mapping
-from simulator.modules.func_units import initialize_units, RSEntry
+from .modules.fetch import fetch_instruction, FU_mapping
+from .modules.func_units import initialize_units, RSEntry
 
-from simulator.modules.ROB import ROB
+from .modules.ROB import ROB
 
 
 def issue_stage(state: State):
@@ -102,6 +102,7 @@ def execute_stage(state: State):
 
     # TODO: Branches?
 
+
 def memory_stage(state: State):
     '''
     1. See if you can send oldest instruction to memory
@@ -126,13 +127,9 @@ def memory_stage(state: State):
                     rs.instruction.mem_cycle_start = state.clock_cycle
                     rs.instruction.mem_cycle_end = state.clock_cycle + state.LSU.memCycles
 
-
-
             state.LSU.memory_busy = True
             rs.instruction.mem_cycle_start = state.clock_cycle
             rs.instruction.mem_cycle_end = state.clock_cycle + state.LSU.memCycles
-
-
 
 
 def writeback_stage(state: State):
@@ -141,7 +138,18 @@ def writeback_stage(state: State):
     2. Put result in ROB and mark as ready
     3. Broadcast result to all waiting RS with this ROB entry operand
     '''
-    pass
+    # find the instruction waiting in CDB buffer the longest
+
+                
+    # return if no valid wb exists
+
+            
+    # pop instruction to wb from the FU's CDB buffer
+
+    
+    
+    
+    
 
 
 def commit_stage(state: State):
@@ -178,5 +186,5 @@ def run(config_file):
     initialize_units(state)
 
     print(state)
-    while True: #TODO: Probably want some break condition here
+    while True:  # TODO: Probably want some break condition here
         clock_tick(state)

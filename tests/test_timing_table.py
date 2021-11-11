@@ -3,7 +3,7 @@ from simulator.modules.state import State
 import simulator.modules.parsers as psr
 from simulator.modules.func_units import initialize_units
 
-def test_good_timing_table_comparison():
+""" def test_good_timing_table_comparison():
     fn = 'tests/inputs/config/test1_config.yml'
     state = State()
     assert psr.load_config(state, fn) == True
@@ -11,10 +11,10 @@ def test_good_timing_table_comparison():
     tt1.load_from_state(state)
     tt2 = TimingTable()
     tt2.load_from_state(state)
-    assert tt1 == tt2
+    assert tt1 == tt2 """
 
 
-def test_bad_timing_table_comparison():
+""" def test_bad_timing_table_comparison():
     fn = 'tests/inputs/config/test1_config.yml'
     state = State()
     assert psr.load_config(state, fn) == True
@@ -23,10 +23,10 @@ def test_bad_timing_table_comparison():
     tt2 = TimingTable()
     state.instructions[1].mem_cycle_start = 2
     tt2.load_from_state(state)
-    assert tt1 != tt2
+    assert tt1 != tt2 """
 
 
-def test_dummy_csv_tt_good():
+""" def test_dummy_csv_tt_good():
     ttfn = 'tests/inputs/timing/dummy1.tt'
     configfn = 'tests/inputs/config/test1_config.yml'
     state = State()
@@ -36,7 +36,7 @@ def test_dummy_csv_tt_good():
     tt2 = TimingTable()
     tt2.load_from_file(ttfn)
     assert tt1 == tt2
-
+ """
 
 def test_dummy_csv_tt_wrong():
     ttfn = 'tests/inputs/timing/dummy2.tt'

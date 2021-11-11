@@ -2,6 +2,7 @@
 
 from prettytable import PrettyTable
 
+from .instruction import Instruction
 
 class State:
     """ Simulator State Object"""
@@ -37,6 +38,9 @@ class State:
         self.LSU = None
 
         self.RAT = {rk: rk for rk in register_keys}
+        
+        # push all the completed instructions to this list
+        self.completed_instructions = []
 
     def get_instruction_table(self) -> str:
         """Return string with table of instructions in state"""

@@ -113,6 +113,9 @@ class FunctionalUnit:
                 self.RS.remove(rs)
 
                 self.dealloc_instance()
+                
+    def get_oldest_ready(self, current_cycle) -> int:
+        pass
 
     def alloc_instance(self):
         # To be overwritten by integer ALU

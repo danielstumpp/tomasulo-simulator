@@ -63,8 +63,8 @@ class TimingTable:
     def load_from_state(self, state: State) -> bool:
         """Loads the Timing table from an existing state"""
 
-        for i in range(len(state.instructions)):
-            inst = state.instructions[i]
+        for i in range(len(state.completed_instructions)):
+            inst = state.completed_instructions[i]
             self.issue.append(inst.issue_cycle)
             self.ex_start.append(inst.execute_cycle_start)
             self.ex_end.append(inst.execute_cycle_end)
