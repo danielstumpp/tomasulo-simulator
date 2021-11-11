@@ -1,5 +1,5 @@
-from simulator.modules.state import State
-from simulator.modules.instruction import Instruction
+from .state import State
+from .instruction import Instruction
 
 def fetch_instruction(state: State):
     assert state.PC >= 0, 'PC value is negative and invalid.'

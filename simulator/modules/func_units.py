@@ -1,6 +1,6 @@
-from simulator.modules.state import State
-from simulator.modules.ROB import ROB
-from simulator.modules.memory import MemoryUnit
+from .state import State
+from .ROB import ROB
+from .memory import MemoryUnit
 
 from prettytable import PrettyTable
 

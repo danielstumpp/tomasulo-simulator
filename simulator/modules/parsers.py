@@ -1,7 +1,7 @@
 """ parser functions to convert input configurations into runnable simulator input"""
-from simulator.modules.state import State
-from simulator.modules.instruction import Instruction
-from simulator.modules.instruction import VALID_INSTRUCTIONS
+from .state import State
+from .instruction import Instruction
+from .instruction import VALID_INSTRUCTIONS
 import yaml
 import csv
 

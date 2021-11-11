@@ -1,7 +1,7 @@
 """Timing table class and related parsers"""
 
-from simulator.modules.instruction import Instruction
-from simulator.modules.state import State
+from .instruction import Instruction
+from .state import State
 from prettytable import PrettyTable
 import csv
 
