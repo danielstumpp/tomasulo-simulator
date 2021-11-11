@@ -45,8 +45,14 @@ class RSEntry:
     def is_ready(self):
         return self.op1_ready and self.op2_ready and not self.executing
 
-    def read_CDB(self, CDB):
-        pass
+    def read_CDB(self, CDB_inst: Instruction):
+        """Accepts CDB broadcast instruction and updates values if possible"""
+        if CDB_inst.ROB_dest == self.op1_ptr:
+            self.op1_val = CDB_inst.result
+            self.op1_ready = True
+        if CDB_inst.ROB_dest == self.op2_ptr:
+            self.op2_val = CDB_inst.result
+            self.op2_ready = True
 
 
 class FunctionalUnit:
@@ -120,6 +126,10 @@ class FunctionalUnit:
     
     def pop_oldest_ready(self) -> Instruction:
         return self.CDB_buffer.pop(0)
+
+    def read_CDB(self, CDB_inst: Instruction):
+        """transmit cdb value to all of the FU reservation stations"""
+        # TODO
 
     def alloc_instance(self):
         # To be overwritten by integer ALU
