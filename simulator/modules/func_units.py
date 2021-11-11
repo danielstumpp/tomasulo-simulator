@@ -1,4 +1,4 @@
-from instruction import Instruction
+from .instruction import Instruction
 from .state import State
 from .ROB import ROB
 from .memory import MemoryUnit
