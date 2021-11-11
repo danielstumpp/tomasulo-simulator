@@ -1,3 +1,4 @@
+from instruction import Instruction
 from .state import State
 from .ROB import ROB
 from .memory import MemoryUnit
@@ -114,8 +115,11 @@ class FunctionalUnit:
 
                 self.dealloc_instance()
                 
-    def get_oldest_ready(self, current_cycle) -> int:
-        pass
+    def get_oldest_ready(self):
+        return self.CDB_buffer[0].execute_cycle_end
+    
+    def pop_oldest_ready(self) -> Instruction:
+        return self.CDB_buffer.pop(0)
 
     def alloc_instance(self):
         # To be overwritten by integer ALU

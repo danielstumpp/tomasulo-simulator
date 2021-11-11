@@ -1,5 +1,6 @@
 
 import argparse
+from os import stat
 
 from .modules.state import State
 from .modules.parsers import load_config
@@ -49,7 +50,7 @@ def issue_stage(state: State):
     elif 'ROB' in rs_entry.op1_ptr:
         # Check the ROB
         rob_idx = int(rs_entry.op1_ptr[3:])
-        if state.ROB.entries[rob_idx].fininshed:
+        if state.ROB.entries[rob_idx].finished:
             rs_entry.op1_val = state.ROB.entries[rob_idx].instruction.result
             rs_entry.op1_ready = True
 
@@ -59,7 +60,7 @@ def issue_stage(state: State):
     elif 'ROB' in rs_entry.op2_ptr:
         # Check the ROB
         rob_idx = int(rs_entry.op2_ptr[3:])
-        if state.ROB.entries[rob_idx].fininshed:
+        if state.ROB.entries[rob_idx].finished:
             rs_entry.op2_val = state.ROB.entries[rob_idx].instruction.result
             rs_entry.op2_ready = True
 
@@ -139,13 +140,30 @@ def writeback_stage(state: State):
     3. Broadcast result to all waiting RS with this ROB entry operand
     '''
     # find the instruction waiting in CDB buffer the longest
-
-                
-    # return if no valid wb exists
-
-            
+    FPA_cycle = state.FPA.get_oldest_ready()
+    FPM_cycle = state.FPM.get_oldest_ready()
+    IA_cycle = state.IA.get_oldest_ready()
+    
+    if FPA_cycle is None and FPM_cycle is None and IA_cycle is None:
+        return  # no write backs happen on this cycle, nothing ready
+    
     # pop instruction to wb from the FU's CDB buffer
+    if FPA_cycle < FPM_cycle and FPA_cycle < IA_cycle:
+        wb_inst = state.FPA.pop_oldest_ready()
+    elif FPM_cycle < FPA_cycle and FPM_cycle < IA_cycle:
+        wb_inst = state.FPM.pop_oldest_ready()
+    elif IA_cycle < FPA_cycle and IA_cycle < FPM_cycle:
+        wb_inst = state.FPM.pop_oldest_ready()
+    else:
+        assert False, 'ERROR: should not get here'
+        
+    # put the wb instruction in the rob
+    
+    
+    # broadcast the wb result to RS
 
+    # effectuate the wb cycle
+    wb_inst.writeback_cycle = state.clock_cycle
     
     
     
