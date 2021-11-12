@@ -56,3 +56,14 @@ def test_sub_d_one_inst():
     assert tt_gold == tt_test
     assert state.registers['F5'] == 2.5
     assert list(state.RAT.values()) == list(state.RAT.keys())
+    
+
+def test_mult_d_one_inst():
+    state = simulator.run('tests/inputs/config/mult_d_single.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file('tests/inputs/timing/mult_d_single.tt')
+    assert tt_gold == tt_test
+    assert state.registers['F5'] == 9.0
+    assert list(state.RAT.values()) == list(state.RAT.keys())
