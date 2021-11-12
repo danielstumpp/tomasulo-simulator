@@ -223,9 +223,10 @@ def run(config_file):
     if not config_success:
         print('Config error. Exiting program')
         exit(0)
-
+    
     initialize_units(state)
 
     print(state)
     while True:  # TODO: Probably want some break condition here
         clock_tick(state)
+        print(state.get_RS_table())
