@@ -129,7 +129,8 @@ class FunctionalUnit:
 
     def read_CDB(self, CDB_inst: Instruction):
         """transmit cdb value to all of the FU reservation stations"""
-        # TODO
+        for rs in self.RS:
+            rs.read_CDB(CDB_inst)
 
     def alloc_instance(self):
         # To be overwritten by integer ALU

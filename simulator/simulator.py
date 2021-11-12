@@ -157,18 +157,17 @@ def writeback_stage(state: State):
     else:
         assert False, 'ERROR: should not get here'
         
-    # put the wb instruction in the rob
-    
-    
-    # broadcast the wb result to RS
-
     # effectuate the wb cycle
     wb_inst.writeback_cycle = state.clock_cycle
+        
+    # put the wb instruction in the rob and mark finished
+    state.ROB.entries[wb_inst.ROB_dest].instruction = wb_inst
+    state.ROB.entries[wb_inst.ROB_dest].finished = True
     
+    # broadcast the wb result to RS
+    for FU in [state.IA, state.FPA, state.FPM, state.LSU]:
+        FU.read_CDB(wb_inst)   
     
-    
-    
-
 
 def commit_stage(state: State):
     '''
