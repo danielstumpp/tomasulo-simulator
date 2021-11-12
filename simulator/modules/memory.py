@@ -1,3 +1,6 @@
+from .instruction import Instruction
+
+
 class MemoryUnit:
     def __init__(self, numRS, exCycles, memCycles, instances, CDBbufferLength):
         self.numRS = numRS
@@ -5,7 +8,7 @@ class MemoryUnit:
         self.memCycles = memCycles
         self.instances = instances
 
-        self.RS = [] # The load/store queue
+        self.RS = []  # The load/store queue
 
         self.CDB_capacity = CDBbufferLength
         self.CDB_buffer = []
@@ -14,13 +17,13 @@ class MemoryUnit:
 
         self.memory_busy = False
 
-    def next_ready_load(self,clock_cycle):
+    def next_ready_load(self, clock_cycle):
         '''
         Get oldest RS that hasn't already gone to memory
         '''
         for rs in self.RS:
             if rs.instruction.type == 'LD' and rs.instruction.mem_cycle_start is None \
-                and rs.is_complete(clock_cycle):
+                    and rs.is_complete(clock_cycle):
                 return rs
         return None
 
@@ -37,18 +40,19 @@ class MemoryUnit:
         if rs.intruction.type == 'SD':
             return rs.op1_ready and rs.is_complete()
 
-    def rs_is_ready(self, rs):
+    def rs_is_ready(self, rs, clock_cycle):
         '''
         Is this reservation station ready for address/offset computation?
         This is done in execution stage
         '''
         if rs.instruction.type == 'LD':
-            return rs.op1_ready and not rs.executing
+            return clock_cycle > rs.instruction.issue_cycle and rs.op1_ready and not rs.executing
         if rs.instruction.type == 'SD':
-            return rs.op2_ready and not rs.executing
+            return clock_cycle > rs.instruction.issue_cycle and rs.op2_ready and not rs.executing
 
     def try_issue(self, clock_cycle):
-        ready_rs = [rs_entry for rs_entry in self.RS if self.rs_is_ready(rs_entry)]
+        ready_rs = [rs_entry for rs_entry in self.RS if self.rs_is_ready(
+            rs_entry, clock_cycle)]
         ready_rs.sort(key=lambda x: x.instruction.issue_cycle)
         if self.ALU_free and len(ready_rs) > 0:
             rs = ready_rs[0]
@@ -64,7 +68,7 @@ class MemoryUnit:
         rs_complete.sort(key=lambda x: x.instruction.issue_cycle)
         if len(rs_complete) > 0:
             rs = rs_complete[0]
-            rs.mem_address = self.calculate_result(rs)
+            rs.mem_address = int(self.calculate_result(rs))
             # rs.mem_alu_done = True #TODO: is this redundant? rs.is_complete() tells us this
 
             self.dealloc_instance()
@@ -80,13 +84,14 @@ class MemoryUnit:
                     if rs.instruction.type == 'LD':
                         load_val = state.memory[rs.mem_address]
                         rs.instruction.result = load_val
+                        print(load_val)
                     if rs.instruction.type == 'SD':
                         state.memory[rs.mem_address] = rs.op1_val
 
     def try_put_CDB(self, clock_cycle):
         if len(self.CDB_buffer) < self.CDB_capacity:
             for rs in self.RS:
-                if rs.instruction.mem_cycle_end is not None and clock_cycle >= rs.instruction.mem_cycle_end:
+                if rs.instruction.mem_cycle_end is not None and clock_cycle > rs.instruction.mem_cycle_end:
                     self.CDB_buffer.append(rs.instruction)
                     self.RS.remove(rs)
 
@@ -96,12 +101,12 @@ class MemoryUnit:
             if rs.instruction.type == 'SD' and self.rs_mem_is_ready(rs):
                 for j, rs_target in enumerate(self.RS[i+1:]):
                     # Look at all subsequent instructions for loads
-                    if rs_target.instruction.type == 'SD' and (not rs_target.is_complete() or \
-                        rs_target.mem_address == rs.mem_address):
+                    if rs_target.instruction.type == 'SD' and (not rs_target.is_complete() or
+                                                               rs_target.mem_address == rs.mem_address):
                         # Another store is going to forward or could potentially forward
                         break
                     if rs_target.instruction.type == 'LD' and rs_target.is_complete() \
-                        and rs_target.mem_address == rs.mem_address and rs_target.instruction.result is None:
+                            and rs_target.mem_address == rs.mem_address and rs_target.instruction.result is None:
                         # This LD can be forwarded and it hasn't been forwarded yet
                         rs_target.instruction.result = rs.op1_val
                         rs_target.instruction.mem_cycle_start = clock_cycle
@@ -109,9 +114,10 @@ class MemoryUnit:
 
     def try_send_load(self, clock_cycle):
         next_load = self.next_ready_load(clock_cycle)
-        if not self.memory_busy and next_load is not None:
+        if not self.memory_busy and next_load is not None and next_load.instruction.execute_cycle_end < clock_cycle:
             next_load.instruction.mem_cycle_start = clock_cycle
-            next_load.instruction.mem_cycle_end = clock_cycle + self.memCycles
+            next_load.instruction.mem_cycle_end = clock_cycle + \
+                (self.memCycles - 1)
             self.memory_busy = True
 
     def alloc_instance(self):
@@ -122,9 +128,25 @@ class MemoryUnit:
 
     def calculate_result(self, rs):
         if rs.instruction.type == 'LD':
-            return rs.op1_val + rs.instruction.offset
+            assert (rs.op1_val + rs.instruction.offset)/4 % 1 == 0, 'Address not word aligned'
+            return (rs.op1_val + rs.instruction.offset)/4
         if rs.instruction.type == 'SD':
+            assert (rs.op2_val + rs.instruction.offset)/4 % 1 == 0, 'Address not word aligned'
             return rs.op2_val + rs.instruction.offset
 
-    def read_CDB(self, inst):
-        pass
+    def get_oldest_ready(self, clock_cycle):
+        if len(self.CDB_buffer) > 0:
+            if self.CDB_buffer[0].execute_cycle_end < clock_cycle:
+                return self.CDB_buffer[0].execute_cycle_end
+            else:
+                return 2**32
+        else:
+            return 2**32  # TODO: probably a better way
+
+    def pop_oldest_ready(self) -> Instruction:
+        return self.CDB_buffer.pop(0)
+
+    def read_CDB(self, CDB_inst: Instruction):
+        """transmit cdb value to all of the FU reservation stations"""
+        for rs in self.RS:
+            rs.read_CDB(CDB_inst)

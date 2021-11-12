@@ -1,5 +1,6 @@
 
 import argparse
+from os import stat
 
 from .modules.timing_table import TimingTable
 
@@ -137,14 +138,22 @@ def writeback_stage(state: State):
     FPA_cycle = state.FPA.get_oldest_ready(state.clock_cycle)
     FPM_cycle = state.FPM.get_oldest_ready(state.clock_cycle)
     IA_cycle = state.IA.get_oldest_ready(state.clock_cycle)
-
+    LSU_cycle = state.LSU.get_oldest_ready(state.clock_cycle)
+    fu_cycles = [LSU_cycle, FPM_cycle, FPA_cycle, IA_cycle]
     # pop instruction to wb from the FU's CDB buffer
-    if FPA_cycle != 2**32 and FPA_cycle < FPM_cycle and FPA_cycle < IA_cycle:
-            wb_inst = state.FPA.pop_oldest_ready()
-    elif FPM_cycle != 2**32 and FPM_cycle < FPA_cycle and FPM_cycle < IA_cycle:
+    FU_min_idx = fu_cycles.index(min(fu_cycles))
+            
+    if fu_cycles[FU_min_idx] != 2**32:
+        if FU_min_idx == 0:
+            wb_inst = state.LSU.pop_oldest_ready()
+        elif FU_min_idx == 1:
             wb_inst = state.FPM.pop_oldest_ready()
-    elif IA_cycle != 2**32 and IA_cycle < FPA_cycle and IA_cycle < FPM_cycle:
+        elif FU_min_idx == 2:
+            wb_inst = state.FPA.pop_oldest_ready()
+        elif FU_min_idx == 3:
             wb_inst = state.IA.pop_oldest_ready()
+        else:
+            assert False, 'should not be here'
     else:
         return  # no write backs happen on this cycle, nothing ready
 
@@ -231,6 +240,7 @@ def run(config_file):
         #print(state.get_RAT_table())
         #print(state.get_ROB_table())
         #print(state.get_register_table())
+        #input()
         
 
     return state
