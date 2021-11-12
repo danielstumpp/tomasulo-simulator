@@ -86,7 +86,7 @@ class MemoryUnit:
     def try_put_CDB(self, clock_cycle):
         if len(self.CDB_buffer) < self.CDB_capacity:
             for rs in self.RS:
-                if clock_cycke >= rs.instrucion.mem_cycle_end:
+                if clock_cycle >= rs.instrucion.mem_cycle_end:
                     self.CDB_buffer.append(rs.instruction)
                     self.RS.remove(rs)
 
