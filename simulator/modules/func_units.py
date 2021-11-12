@@ -27,11 +27,12 @@ class RSEntry:
         self.op2_ready = False
 
         if instruction.immediate is not None:
-            op2_val = instruction.immediate
-            op2_ready = True
+            self.op2_val = instruction.immediate
+            self.op2_ready = True
 
         self.mem_alu_done = False
         self.mem_address = None
+
 
     def issue_to_ALU(self, clock_cycle):
         '''
@@ -42,8 +43,8 @@ class RSEntry:
     def is_complete(self, clock_cycle):
         return self.instruction.execute_cycle_end is not None and clock_cycle >= self.instruction.execute_cycle_end
 
-    def is_ready(self):
-        return self.op1_ready and self.op2_ready and not self.executing
+    def is_ready(self, clock_cycle):
+        return clock_cycle > self.instruction.issue_cycle and self.op1_ready and self.op2_ready and not self.executing
 
     def read_CDB(self, CDB_inst: Instruction):
         """Accepts CDB broadcast instruction and updates values if possible"""
@@ -99,14 +100,13 @@ class FunctionalUnit:
         pass
 
     def try_issue(self, clock_cycle):
-        ready_rs = [rs_entry for rs_entry in self.RS if rs_entry.is_ready()]
-        ready_rs.sort(key=lambda x: x.issue_cycle)
+        ready_rs = [rs_entry for rs_entry in self.RS if rs_entry.is_ready(clock_cycle)]
+        ready_rs.sort(key=lambda x: x.instruction.issue_cycle)
         for free_idx in range(min(self.free_instances, len(ready_rs))):
             rs = ready_rs[free_idx]
             rs.executing = True
             rs.instruction.execute_cycle_start = clock_cycle
-            rs.instruction.execute_cycle_end = clock_cycle + self.exCycles
-
+            rs.instruction.execute_cycle_end = clock_cycle + (self.exCycles-1)
             self.alloc_instance()
 
     def check_done(self, clock_cycle):
@@ -114,10 +114,11 @@ class FunctionalUnit:
         TODO: Make RS hold return value of ex and free up ALU even if CDB is full.
         '''
         rs_complete = [rs for rs in self.RS if rs.is_complete(clock_cycle)]
-        rs_complete.sort(key=lambda x: x.issue_cycle)
+        rs_complete.sort(key=lambda x: x.instruction.issue_cycle)
         for rs in rs_complete:
             if len(self.CDB_buffer) < self.CDB_capacity:
-                rs.instrucion.result = self.calculate_result(rs)
+
+                rs.instruction.result = self.calculate_result(rs)
 
                 self.CDB_buffer.append(rs.instruction)
                 self.RS.remove(rs)
@@ -128,7 +129,7 @@ class FunctionalUnit:
         if len(self.CDB_buffer) > 0:
             return self.CDB_buffer[0].execute_cycle_end
         else:
-            return None
+            return 2**32 # TODO: probably a better way
 
     def pop_oldest_ready(self) -> Instruction:
         return self.CDB_buffer.pop(0)

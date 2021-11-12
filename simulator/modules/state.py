@@ -41,6 +41,9 @@ class State:
         
         # push all the completed instructions to this list
         self.completed_instructions = []
+        
+        self.issued = 0
+        self.committed = 0
 
     def get_instruction_table(self) -> str:
         """Return string with table of instructions in state"""

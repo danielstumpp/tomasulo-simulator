@@ -26,9 +26,9 @@ FUs:
     instances: 1
 
 ROBentries: 128
-CDBbufferLength: 1
+CDBbufferLength: 10
 
 # init files
 #memInitFile: tests/inputs/mem/mem1.mem
 #regInitFile: tests/inputs/reg/reg1.reg
-instFile: tests/inputs/inst/addi.asm
+instFile: tests/inputs/inst/addi_single.asm

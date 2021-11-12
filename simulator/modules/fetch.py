@@ -4,7 +4,6 @@ from .instruction import Instruction
 def fetch_instruction(state: State):
     assert state.PC >= 0, 'PC value is negative and invalid.'
     if state.PC >= len(state.instructions):
-        print('PC is greater than length of instruction stream. Program ended.')
         return False
 
     instruction = state.instructions[state.PC]

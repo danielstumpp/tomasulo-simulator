@@ -19,7 +19,7 @@ class MemoryUnit:
         Get oldest RS that hasn't already gone to memory
         '''
         for rs in self.RS:
-            if rs.instruction.type == 'LD' and rs.instruction.mem_cycle_start = None \
+            if rs.instruction.type == 'LD' and rs.instruction.mem_cycle_start is None \
                 and rs.is_complete():
                 return rs
         return None
@@ -84,7 +84,7 @@ class MemoryUnit:
                         state.memory[rs.mem_address] = rs.op1_val
 
     def try_put_CDB(self, clock_cycle):
-        if len(self.CDB) < self.CDB_capacity:
+        if len(self.CDB_buffer) < self.CDB_capacity:
             for rs in self.RS:
                 if clock_cycke >= rs.instrucion.mem_cycle_end:
                     self.CDB_buffer.append(rs.instruction)
@@ -112,7 +112,7 @@ class MemoryUnit:
         if not self.memory_busy and next_load is not None:
             next_load.instruction.mem_cycle_start = clock_cycle
             next_load.instruction.mem_cycle_end = clock_cycle + self.memCycles
-            self..memory_busy = True
+            self.memory_busy = True
 
     def alloc_instance(self):
         self.ALU_free = False
@@ -125,3 +125,6 @@ class MemoryUnit:
             return rs.op1_val + rs.instruction.offset
         if rs.instruction.type == 'SD':
             return rs.op2_val + rs.instruction.offset
+
+    def read_CDB(self, inst):
+        pass
