@@ -106,31 +106,22 @@ def execute_stage(state: State):
 
 def memory_stage(state: State):
     '''
-    1. See if you can send oldest instruction to memory
-    1.1 If you can, do store forwarding.
-    1.2 Push store-forwarded load instructions to local CDB buffer
-    1.3 Send memory instruction, move head of queue.
-    2. Handle ALU computation: calculate address for oldest instruction that has
-        ready operands. Mark this as a cycle in the execute stage.
+    1.0 Free up memory unit for instructions completing this cycle
+    1.1 Push completed load instructions to local CDB buffer
+    1.2 If you can, do store forwarding.
+    1.3 Send memory instruction.
     '''
     # Free up the memory unit if the busy instruction finished this cycle
     state.LSU.check_memory_done(state)
 
-    if not state.LSU.memory_busy and len(state.LSU.RS) > 0:
-        rs = state.LSU.next_mem_rs()
-        if rs is not None and state.LSU.rs_mem_is_ready(rs):
-            # Stores only go to memory in the commit stage
-            if rs.instruction.type == 'SD':
-                if state.ROB.head_idx == rs.instruction.ROB_dest:
-                    state.ROB.entries[state.ROB.head_idx].instruction = rs.instruction
-                    # ROB head is this store instruction
-                    state.LSU.memory_busy = True
-                    rs.instruction.mem_cycle_start = state.clock_cycle
-                    rs.instruction.mem_cycle_end = state.clock_cycle + state.LSU.memCycles
+    # Try to put finished loads on the CDB
+    state.LSU.try_put_CDB(state.clock_cycle)
 
-            state.LSU.memory_busy = True
-            rs.instruction.mem_cycle_start = state.clock_cycle
-            rs.instruction.mem_cycle_end = state.clock_cycle + state.LSU.memCycles
+    # Do store-forwarding
+    state.LSU.store_forward(state.clock_cycle)
+
+    # Put loads in memory unit
+    state.LSU.try_send_load(state.clock_cycle)
 
 
 def writeback_stage(state: State):
@@ -143,10 +134,10 @@ def writeback_stage(state: State):
     FPA_cycle = state.FPA.get_oldest_ready()
     FPM_cycle = state.FPM.get_oldest_ready()
     IA_cycle = state.IA.get_oldest_ready()
-    
+
     if FPA_cycle is None and FPM_cycle is None and IA_cycle is None:
         return  # no write backs happen on this cycle, nothing ready
-    
+
     # pop instruction to wb from the FU's CDB buffer
     if FPA_cycle < FPM_cycle and FPA_cycle < IA_cycle:
         wb_inst = state.FPA.pop_oldest_ready()
@@ -156,18 +147,18 @@ def writeback_stage(state: State):
         wb_inst = state.FPM.pop_oldest_ready()
     else:
         assert False, 'ERROR: should not get here'
-        
+
     # effectuate the wb cycle
     wb_inst.writeback_cycle = state.clock_cycle
-        
+
     # put the wb instruction in the rob and mark finished
     state.ROB.entries[wb_inst.ROB_dest].instruction = wb_inst
     state.ROB.entries[wb_inst.ROB_dest].finished = True
-    
+
     # broadcast the wb result to RS
     for FU in [state.IA, state.FPA, state.FPM, state.LSU]:
-        FU.read_CDB(wb_inst)   
-    
+        FU.read_CDB(wb_inst)
+
 
 def commit_stage(state: State):
     '''
@@ -187,11 +178,11 @@ def commit_stage(state: State):
             dest, _, _ = commit_inst.get_instruction_registers()
             if dest is not None:
                 state.registers[dest] = commit_inst.result
-                
+
                 # check if rat same as ROB
                 if state.RAT[dest] == f'ROB{commit_inst.ROB_dest}':
-                    state.RAT[dest] == dest    
-            
+                    state.RAT[dest] == dest
+
             # update timing
             commit_inst.commit_cycle = state.clock_cycle
             state.completed_instructions.append(commit_inst)
@@ -199,10 +190,10 @@ def commit_stage(state: State):
             return # the head just finished on this cycle, so don't commit
     else:
         return  # still waiting for head to finish, no commits
-    
+
     # TODO: Add `fire off exceptions' not sure what this was planned to be
-    
-    
+
+
 
 def clock_tick(state: State):
     '''
@@ -223,7 +214,7 @@ def run(config_file):
     if not config_success:
         print('Config error. Exiting program')
         exit(0)
-    
+
     initialize_units(state)
 
     print(state)

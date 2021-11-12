@@ -75,7 +75,7 @@ class FunctionalUnit:
         tbl = PrettyTable(['Op', 'Dest-Tag', 'Tag1', 'Tag2', 'Val1', 'Val2'])
 
         for rs in self.RS:
-            tbl.add_row([rs.instruction.str, 'ROB{}'.format(rs.instruction.ROB_dest), 
+            tbl.add_row([rs.instruction.str, 'ROB{}'.format(rs.instruction.ROB_dest),
             str(rs.op1_ptr), str(rs.op2_ptr), str(rs.op1_val), str(rs.op2_val)])
 
         return tbl.get_string()
@@ -110,6 +110,9 @@ class FunctionalUnit:
             self.alloc_instance()
 
     def check_done(self, clock_cycle):
+        '''
+        TODO: Make RS hold return value of ex and free up ALU even if CDB is full.
+        '''
         rs_complete = [rs for rs in self.RS if rs.is_complete(clock_cycle)]
         rs_complete.sort(key=lambda x: x.issue_cycle)
         for rs in rs_complete:
@@ -120,13 +123,13 @@ class FunctionalUnit:
                 self.RS.remove(rs)
 
                 self.dealloc_instance()
-                
+
     def get_oldest_ready(self):
         if len(self.CDB_buffer) > 0:
             return self.CDB_buffer[0].execute_cycle_end
         else:
             return None
-    
+
     def pop_oldest_ready(self) -> Instruction:
         return self.CDB_buffer.pop(0)
 
