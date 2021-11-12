@@ -68,7 +68,7 @@ def issue_stage(state: State):
     FU.RS.append(rs_entry)
 
     # Put it in the ROB
-    rob_idx = state.ROB.allocate_new()
+    rob_idx = state.ROB.allocate_new(instruction)
     instruction.ROB_dest = rob_idx
 
     # Touch the RAT, points to ROB
@@ -230,4 +230,6 @@ def run(config_file):
     while True:  # TODO: Probably want some break condition here
         clock_tick(state)
         print(state.get_RS_table())
+        print(state.get_RAT_table())
+        print(state.get_ROB_table())
         input()

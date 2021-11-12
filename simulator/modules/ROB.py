@@ -21,10 +21,10 @@ class ROB:
             if self.entries[i] != None:
                 if self.head_idx != i:
                     row = ['ROB{}'.format(i),
-                           self.entries[i].instruction.ID, self.entries[i].finished]
+                           self.entries[i].instruction.str, self.entries[i].finished]
                 else:
                     row = ['\033[92mROB{}\033[0m'.format(i),
-                           self.entries[i].instruction.ID, self.entries[i].finished]
+                           self.entries[i].instruction.str, self.entries[i].finished]
             else:
                 row = ['ROB{}'.format(i), '--', '--']
 
@@ -35,7 +35,7 @@ class ROB:
     def is_full(self):
         return (self.write_idx+1) % self.max_entries == self.head_idx
 
-    def allocate_new(self):
+    def allocate_new(self, inst):
         '''
         Creates new ROBEntry
         Returns index of entry
@@ -43,6 +43,7 @@ class ROB:
         assert not self.is_full(), 'You cannot add to a full ROB'
 
         new = ROBEntry()
+        new.instruction = inst
         self.entries[self.write_idx] = new
         ret = self.write_idx
         self.write_idx = (self.write_idx+1) % self.max_entries
