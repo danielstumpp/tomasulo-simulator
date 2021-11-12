@@ -40,7 +40,7 @@ class RSEntry:
         pass
 
     def is_complete(self, clock_cycle):
-        return clock_cycle >= self.instruction.execute_cycle_end
+        return self.instruction.execute_cycle_end is not None and clock_cycle >= self.instruction.execute_cycle_end
 
     def is_ready(self):
         return self.op1_ready and self.op2_ready and not self.executing
@@ -110,7 +110,7 @@ class FunctionalUnit:
             self.alloc_instance()
 
     def check_done(self, clock_cycle):
-        rs_complete = [rs for rs in self.RS if rs.is_complete()]
+        rs_complete = [rs for rs in self.RS if rs.is_complete(clock_cycle)]
         rs_complete.sort(key=lambda x: x.issue_cycle)
         for rs in rs_complete:
             if len(self.CDB_buffer) < self.CDB_capacity:
@@ -122,7 +122,10 @@ class FunctionalUnit:
                 self.dealloc_instance()
                 
     def get_oldest_ready(self):
-        return self.CDB_buffer[0].execute_cycle_end
+        if len(self.CDB_buffer) > 0:
+            return self.CDB_buffer[0].execute_cycle_end
+        else:
+            return None
     
     def pop_oldest_ready(self) -> Instruction:
         return self.CDB_buffer.pop(0)

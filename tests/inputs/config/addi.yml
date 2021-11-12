@@ -1,0 +1,34 @@
+# yaml name field
+name: addi
+
+# Functional Unit Resources
+FUs:
+  # integer adders
+  IA:
+    numRS: 2
+    exCycles: 1
+    memCycles: 0
+    instances: 1
+  FPA:
+    numRS: 3
+    exCycles: 3
+    memCycles: 0
+    instances: 1
+  FPM:
+    numRS: 2
+    exCycles: 20
+    memCycles: 0
+    instances: 1
+  LSU:
+    numRS: 2
+    exCycles: 1
+    memCycles: 10
+    instances: 1
+
+ROBentries: 128
+CDBbufferLength: 1
+
+# init files
+#memInitFile: tests/inputs/mem/mem1.mem
+#regInitFile: tests/inputs/reg/reg1.reg
+instFile: tests/inputs/inst/addi.asm

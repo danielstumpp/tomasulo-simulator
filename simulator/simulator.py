@@ -57,7 +57,7 @@ def issue_stage(state: State):
     if rs_entry.op2_ptr in state.registers.keys():
         rs_entry.op2_val = state.registers[rs_entry.op2_ptr]
         rs_entry.op2_ready = True
-    elif 'ROB' in rs_entry.op2_ptr:
+    elif 'ROB' in str(rs_entry.op2_ptr):
         # Check the ROB
         rob_idx = int(rs_entry.op2_ptr[3:])
         if state.ROB.entries[rob_idx].finished:
@@ -230,3 +230,4 @@ def run(config_file):
     while True:  # TODO: Probably want some break condition here
         clock_tick(state)
         print(state.get_RS_table())
+        input()
