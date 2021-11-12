@@ -125,9 +125,12 @@ class FunctionalUnit:
 
                 self.dealloc_instance()
 
-    def get_oldest_ready(self):
+    def get_oldest_ready(self, clock_cycle):
         if len(self.CDB_buffer) > 0:
-            return self.CDB_buffer[0].execute_cycle_end
+            if self.CDB_buffer[0].execute_cycle_end < clock_cycle:
+                return self.CDB_buffer[0].execute_cycle_end
+            else:
+                return 2**32            
         else:
             return 2**32 # TODO: probably a better way
 

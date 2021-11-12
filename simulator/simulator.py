@@ -134,9 +134,9 @@ def writeback_stage(state: State):
     3. Broadcast result to all waiting RS with this ROB entry operand
     '''
     # find the instruction waiting in CDB buffer the longest
-    FPA_cycle = state.FPA.get_oldest_ready()
-    FPM_cycle = state.FPM.get_oldest_ready()
-    IA_cycle = state.IA.get_oldest_ready()
+    FPA_cycle = state.FPA.get_oldest_ready(state.clock_cycle)
+    FPM_cycle = state.FPM.get_oldest_ready(state.clock_cycle)
+    IA_cycle = state.IA.get_oldest_ready(state.clock_cycle)
 
     # pop instruction to wb from the FU's CDB buffer
     if FPA_cycle != 2**32 and FPA_cycle < FPM_cycle and FPA_cycle < IA_cycle:
