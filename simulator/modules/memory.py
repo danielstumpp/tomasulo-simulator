@@ -89,3 +89,6 @@ class MemoryUnit:
             return rs.op1_val + rs.instruction.offset
         if rs.instruction.type == 'SD':
             return rs.op2_val + rs.instruction.offset
+
+    def read_CDB(self, inst):
+        pass

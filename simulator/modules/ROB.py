@@ -13,6 +13,7 @@ class ROB:
         self.entries = [None]*ROBentries
         self.head_idx = 0
         self.write_idx = 0
+        self.num_entries = 0
 
     def __str__(self) -> str:
         tbl = PrettyTable(['Entry', 'Instruction', 'Finished'])
@@ -47,6 +48,7 @@ class ROB:
         self.entries[self.write_idx] = new
         ret = self.write_idx
         self.write_idx = (self.write_idx+1) % self.max_entries
+        self.num_entries += 1
         return ret
 
     def head_ready(self) -> bool:
@@ -56,7 +58,8 @@ class ROB:
         head_inst = self.entries[self.head_idx]
         self.entries[self.head_idx].finished = False
         self.head_idx = (self.head_idx+1) % self.max_entries
+        self.num_entries -= 1
         return head_inst
     
     def peak_head(self):
-        return self.entries[self.head_idx]
+        return self.entries[self.head_idx].instruction

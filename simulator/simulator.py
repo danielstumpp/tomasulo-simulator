@@ -1,6 +1,7 @@
 
 import argparse
-from os import stat
+
+from .modules.timing_table import TimingTable
 
 from .modules.state import State
 from .modules.parsers import load_config
@@ -77,6 +78,8 @@ def issue_stage(state: State):
 
     # Increment PC, change when we do branches
     state.PC += 1
+    state.issued +=1
+    return True
 
 
 def execute_stage(state: State):
@@ -143,19 +146,16 @@ def writeback_stage(state: State):
     FPA_cycle = state.FPA.get_oldest_ready()
     FPM_cycle = state.FPM.get_oldest_ready()
     IA_cycle = state.IA.get_oldest_ready()
-    
-    if FPA_cycle is None and FPM_cycle is None and IA_cycle is None:
-        return  # no write backs happen on this cycle, nothing ready
-    
+
     # pop instruction to wb from the FU's CDB buffer
-    if FPA_cycle < FPM_cycle and FPA_cycle < IA_cycle:
-        wb_inst = state.FPA.pop_oldest_ready()
-    elif FPM_cycle < FPA_cycle and FPM_cycle < IA_cycle:
-        wb_inst = state.FPM.pop_oldest_ready()
-    elif IA_cycle < FPA_cycle and IA_cycle < FPM_cycle:
-        wb_inst = state.FPM.pop_oldest_ready()
+    if FPA_cycle != 2**32 and FPA_cycle < FPM_cycle and FPA_cycle < IA_cycle:
+            wb_inst = state.FPA.pop_oldest_ready()
+    elif FPM_cycle != 2**32 and FPM_cycle < FPA_cycle and FPM_cycle < IA_cycle:
+            wb_inst = state.FPM.pop_oldest_ready()
+    elif IA_cycle != 2**32 and IA_cycle < FPA_cycle and IA_cycle < FPM_cycle:
+            wb_inst = state.IA.pop_oldest_ready()
     else:
-        assert False, 'ERROR: should not get here'
+        return  # no write backs happen on this cycle, nothing ready
         
     # effectuate the wb cycle
     wb_inst.writeback_cycle = state.clock_cycle
@@ -190,11 +190,13 @@ def commit_stage(state: State):
                 
                 # check if rat same as ROB
                 if state.RAT[dest] == f'ROB{commit_inst.ROB_dest}':
-                    state.RAT[dest] == dest    
+                    state.RAT[dest] = dest    
             
             # update timing
             commit_inst.commit_cycle = state.clock_cycle
             state.completed_instructions.append(commit_inst)
+            state.committed += 1
+            state.ROB.pop_head()
         else:
             return # the head just finished on this cycle, so don't commit
     else:
@@ -208,14 +210,20 @@ def clock_tick(state: State):
     '''
     IF | EX | MEM | WB | COM
     '''
-    issue_stage(state)
+    # tick clock
+    state.clock_cycle += 1
+    
+    good_issue = issue_stage(state)
     execute_stage(state)
     memory_stage(state)
     writeback_stage(state)
     commit_stage(state)
-
+    
     # Check if program has finished
-
+    if not good_issue and state.ROB.num_entries == 0 and state.issued == state.committed:
+        return False
+    else:
+        return True
 
 def run(config_file):
     state = State()
@@ -227,9 +235,10 @@ def run(config_file):
     initialize_units(state)
 
     print(state)
-    while True:  # TODO: Probably want some break condition here
-        clock_tick(state)
-        print(state.get_RS_table())
-        print(state.get_RAT_table())
-        print(state.get_ROB_table())
-        input()
+    while clock_tick(state): 
+        print(f'--------- Cycle {state.clock_cycle} ---------')
+        #print(state.get_RAT_table())
+        #print(state.get_ROB_table())
+        #print(state.get_register_table())
+    
+    return state
