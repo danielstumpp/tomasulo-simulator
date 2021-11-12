@@ -173,12 +173,36 @@ def commit_stage(state: State):
     '''
     1. Check head of ROB. If instruction is ready, update ARF.
     1.1. If RAT entry is same as ROB, reset RAT to ARF.
-    1.2. Move ROB head.
+    1.2. Move ROB head. -> done in ROB.pop_head()
     1.3 Fire off exceptions.
     1.4 Update instruction metadata with timing, add to timing data structure
     '''
-    pass
-
+    # check if head of ROB is ready
+    if state.ROB.head_ready():
+        # head is ready to commit
+        # pop the commit instruction from the ROB
+        commit_inst = state.ROB.peak_head()
+        if commit_inst.writeback_cycle < state.clock_cycle: # TODO, update for inst that don't wb
+            # update the ARF
+            dest, _, _ = commit_inst.get_instruction_registers()
+            if dest is not None:
+                state.registers[dest] = commit_inst.result
+                
+                # check if rat same as ROB
+                if state.RAT[dest] == f'ROB{commit_inst.ROB_dest}':
+                    state.RAT[dest] == dest    
+            
+            # update timing
+            commit_inst.commit_cycle = state.clock_cycle
+            state.completed_instructions.append(commit_inst)
+        else:
+            return # the head just finished on this cycle, so don't commit
+    else:
+        return  # still waiting for head to finish, no commits
+    
+    # TODO: Add `fire off exceptions' not sure what this was planned to be
+    
+    
 
 def clock_tick(state: State):
     '''

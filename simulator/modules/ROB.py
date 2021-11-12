@@ -31,7 +31,6 @@ class ROB:
             tbl.add_row(row)
 
         return tbl.get_string()
-                
 
     def is_full(self):
         return (self.write_idx+1) % self.max_entries == self.head_idx
@@ -48,3 +47,15 @@ class ROB:
         ret = self.write_idx
         self.write_idx = (self.write_idx+1) % self.max_entries
         return ret
+
+    def head_ready(self) -> bool:
+        return self.entries[self.head_idx] is not None and self.entries[self.head_idx].finished
+
+    def pop_head(self):
+        head_inst = self.entries[self.head_idx]
+        self.entries[self.head_idx].finished = False
+        self.head_idx = (self.head_idx+1) % self.max_entries
+        return head_inst
+    
+    def peak_head(self):
+        return self.entries[self.head_idx]
