@@ -13,10 +13,10 @@ def FU_mapping(state: State, instruction: Instruction):
     type = instruction.type
     if type in ['ADD', 'SUB', 'ADDI', 'BEQ', 'BNE']:
         return state.IA
-    if type in ['ADD.D, SUB.D']:
+    if type in ['ADD.D', 'SUB.D']:
         return state.FPA
     if type in ['MULT.D']:
         return state.FPM
     if type in ['LD', 'SD']:
         return state.LSU
-    assert False, 'that instruction type is not implemeted'
+    assert False, 'that instruction type is not implemented'
