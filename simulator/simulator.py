@@ -231,5 +231,6 @@ def run(config_file):
         #print(state.get_RAT_table())
         #print(state.get_ROB_table())
         #print(state.get_register_table())
+        
 
     return state

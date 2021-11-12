@@ -14,13 +14,13 @@ class MemoryUnit:
 
         self.memory_busy = False
 
-    def next_ready_load(self):
+    def next_ready_load(self,clock_cycle):
         '''
         Get oldest RS that hasn't already gone to memory
         '''
         for rs in self.RS:
             if rs.instruction.type == 'LD' and rs.instruction.mem_cycle_start is None \
-                and rs.is_complete():
+                and rs.is_complete(clock_cycle):
                 return rs
         return None
 
@@ -49,19 +49,19 @@ class MemoryUnit:
 
     def try_issue(self, clock_cycle):
         ready_rs = [rs_entry for rs_entry in self.RS if self.rs_is_ready(rs_entry)]
-        ready_rs.sort(key=lambda x: x.issue_cycle)
+        ready_rs.sort(key=lambda x: x.instruction.issue_cycle)
         if self.ALU_free and len(ready_rs) > 0:
             rs = ready_rs[0]
             rs.executing = True
             rs.instruction.execute_cycle_start = clock_cycle
-            rs.instruction.execute_cycle_end = clock_cycle + self.exCycles
+            rs.instruction.execute_cycle_end = clock_cycle + (self.exCycles-1)
 
             self.alloc_instance()
 
     def check_done(self, clock_cycle):
         # Check that ALU computation is done
-        rs_complete = [rs for rs in self.RS if rs.is_complete()]
-        rs_complete.sort(key=lambda x: x.issue_cycle)
+        rs_complete = [rs for rs in self.RS if rs.is_complete(clock_cycle)]
+        rs_complete.sort(key=lambda x: x.instruction.issue_cycle)
         if len(rs_complete) > 0:
             rs = rs_complete[0]
             rs.mem_address = self.calculate_result(rs)
@@ -76,7 +76,7 @@ class MemoryUnit:
         if self.memory_busy:
             for rs in self.RS:
                 if state.clock_cycle == rs.instruction.mem_cycle_end:
-                    memory_busy = False
+                    self.memory_busy = False
                     if rs.instruction.type == 'LD':
                         load_val = state.memory[rs.mem_address]
                         rs.instruction.result = load_val
@@ -86,7 +86,7 @@ class MemoryUnit:
     def try_put_CDB(self, clock_cycle):
         if len(self.CDB_buffer) < self.CDB_capacity:
             for rs in self.RS:
-                if clock_cycle >= rs.instrucion.mem_cycle_end:
+                if rs.instruction.mem_cycle_end is not None and clock_cycle >= rs.instruction.mem_cycle_end:
                     self.CDB_buffer.append(rs.instruction)
                     self.RS.remove(rs)
 
@@ -108,7 +108,7 @@ class MemoryUnit:
                         rs_target.instruction.mem_cycle_end = clock_cycle + 1
 
     def try_send_load(self, clock_cycle):
-        next_load = self.next_ready_load()
+        next_load = self.next_ready_load(clock_cycle)
         if not self.memory_busy and next_load is not None:
             next_load.instruction.mem_cycle_start = clock_cycle
             next_load.instruction.mem_cycle_end = clock_cycle + self.memCycles
@@ -118,7 +118,7 @@ class MemoryUnit:
         self.ALU_free = False
 
     def dealloc_instance(self):
-        set.ALU_free = True
+        self.ALU_free = True
 
     def calculate_result(self, rs):
         if rs.instruction.type == 'LD':
