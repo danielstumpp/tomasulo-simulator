@@ -21,9 +21,18 @@ class MemoryUnit:
         '''
         Get oldest RS that hasn't already gone to memory
         '''
+        seen_addresses = []
         for rs in self.RS:
+            if rs.instruction.type == 'SD':
+                if rs.mem_address is None:
+                    # A store's memory address is unknown - might have conflict
+                    return None
+                else:
+                    seen_addresses.append(rs.mem_address)
             if rs.instruction.type == 'LD' and rs.instruction.mem_cycle_start is None \
-                    and rs.is_complete(clock_cycle):
+                    and rs.is_complete(clock_cycle) and rs.mem_address not in seen_addresses:
+                # Found a load instruction with operands ready and there is no memory dependency on an
+                # older store instruction.
                 return rs
         return None
 
@@ -64,13 +73,11 @@ class MemoryUnit:
 
     def check_done(self, clock_cycle):
         # Check that ALU computation is done
-        rs_complete = [rs for rs in self.RS if rs.is_complete(clock_cycle)]
+        rs_complete = [rs for rs in self.RS if (rs.is_complete(clock_cycle) and rs.mem_address is None)]
         rs_complete.sort(key=lambda x: x.instruction.issue_cycle)
         if len(rs_complete) > 0:
             rs = rs_complete[0]
             rs.mem_address = int(self.calculate_result(rs))
-            # rs.mem_alu_done = True #TODO: is this redundant? rs.is_complete() tells us this
-
             self.dealloc_instance()
 
     def check_memory_done(self, state):
@@ -102,16 +109,16 @@ class MemoryUnit:
             if rs.instruction.type == 'SD' and self.rs_mem_is_ready(rs, clock_cycle):
                 for j, rs_target in enumerate(self.RS[i+1:]):
                     # Look at all subsequent instructions for loads
-                    if rs_target.instruction.type == 'SD' and (not rs_target.is_complete() or
+                    if rs_target.instruction.type == 'SD' and (not rs_target.is_complete(clock_cycle) or
                                                                rs_target.mem_address == rs.mem_address):
                         # Another store is going to forward or could potentially forward
                         break
-                    if rs_target.instruction.type == 'LD' and rs_target.is_complete() \
+                    if rs_target.instruction.type == 'LD' and rs_target.is_complete(clock_cycle) \
                             and rs_target.mem_address == rs.mem_address and rs_target.instruction.result is None:
                         # This LD can be forwarded and it hasn't been forwarded yet
                         rs_target.instruction.result = rs.op1_val
                         rs_target.instruction.mem_cycle_start = clock_cycle
-                        rs_target.instruction.mem_cycle_end = clock_cycle + 1
+                        rs_target.instruction.mem_cycle_end = clock_cycle
 
     def try_send_load(self, clock_cycle):
         next_load = self.next_ready_load(clock_cycle)

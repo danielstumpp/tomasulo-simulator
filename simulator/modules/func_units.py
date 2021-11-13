@@ -30,7 +30,6 @@ class RSEntry:
             self.op2_val = instruction.immediate
             self.op2_ready = True
 
-        self.mem_alu_done = False
         self.mem_address = None
 
 

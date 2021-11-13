@@ -26,3 +26,5 @@ def test_mult_d_dep_inst():
     assert state.registers['F10'] == 9.0
     assert state.registers['F1'] == 81.0
     assert tt_gold == tt_test
+
+
