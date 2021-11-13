@@ -51,13 +51,6 @@ class TimingTable:
                         other.commit[i] = other.mem_start[i]+'-'+other.mem_end[i]
                         other.mem_start[i] = other.mem_end[i] = '-'                
             
-            print(other.commit)
-            print(self.commit)
-            print(other.mem_start)
-            print(self.mem_start)
-            print(other.mem_end)
-            print(self.mem_end)
-
             vals_valid = ((self.issue == other.issue) and
                           (self.ex_start == other.ex_start) and
                           (self.ex_end == other.ex_end) and

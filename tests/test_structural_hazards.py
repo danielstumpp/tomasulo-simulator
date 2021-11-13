@@ -17,3 +17,19 @@ def test_IA_RS_hazard():
     assert state.registers['R7'] == -40
     assert state.registers['R8'] == 40
     assert tt_gold == tt_test
+
+
+def test_FPA_RS_hazard():
+    state = simulator.run(root + 'test_FPA_RS_hazard/FPA_RS_hazard.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file(root + 'test_FPA_RS_hazard/FPA_RS_hazard.tt')
+    print(tt_test)
+    assert list(state.RAT.values()) == list(state.RAT.keys())
+    assert state.registers['F21'] == 6.1
+    assert state.registers['F22'] == 13.0
+    assert state.registers['F23'] == 5.0
+    assert state.registers['F24'] == -5.0
+    assert state.registers['F25'] == 9.1
+    assert tt_gold == tt_test

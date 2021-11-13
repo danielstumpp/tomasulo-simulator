@@ -247,7 +247,6 @@ def run(config_file):
 
     initialize_units(state)
 
-    print(state)
     while clock_tick(state):
         print(f'--------- Cycle {state.clock_cycle} ---------')
         #print(state.get_RAT_table())
@@ -256,5 +255,5 @@ def run(config_file):
         #print(state.get_RS_table())
         #input()
         
-
+    
     return state
