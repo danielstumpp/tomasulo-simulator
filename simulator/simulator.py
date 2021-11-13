@@ -1,6 +1,5 @@
 
 import argparse
-from os import stat
 
 from .modules.timing_table import TimingTable
 
@@ -40,10 +39,13 @@ def issue_stage(state: State):
 
     # Look at RAT
     dest, op1, op2 = instruction.get_instruction_registers()
+    print(op1,' ',op2)
     if op1 is not None:
         rs_entry.op1_ptr = state.RAT[op1]
     if op2 is not None:
         rs_entry.op2_ptr = state.RAT[op2]
+        
+    print(rs_entry.op1_ptr,' ',rs_entry.op2_ptr)
 
     # Fetch values that are ready
     if rs_entry.op1_ptr in state.registers.keys():
@@ -205,7 +207,6 @@ def commit_stage(state: State):
     # TODO: Add `fire off exceptions' not sure what this was planned to be
 
 
-
 def clock_tick(state: State):
     '''
     IF | EX | MEM | WB | COM
@@ -240,6 +241,7 @@ def run(config_file):
         #print(state.get_RAT_table())
         #print(state.get_ROB_table())
         #print(state.get_register_table())
+        #print(state.get_RS_table())
         #input()
         
 

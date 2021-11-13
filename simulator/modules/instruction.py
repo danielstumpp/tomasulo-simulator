@@ -46,7 +46,7 @@ class Instruction:
         if type in ['ADD', 'SUB']:
             return self.Rd, self.Rs, self.Rt
         if type == 'ADDI':
-            return self.Rs, self.Rt, None
+            return self.Rt, self.Rs, None
         if type in ['ADD.D', 'SUB.D', 'MULT.D']:
             return self.Fd, self.Fs, self.Ft
         if type == 'SD':

@@ -48,10 +48,10 @@ class RSEntry:
 
     def read_CDB(self, CDB_inst: Instruction):
         """Accepts CDB broadcast instruction and updates values if possible"""
-        if CDB_inst.ROB_dest == self.op1_ptr:
+        if f'ROB{CDB_inst.ROB_dest}' == self.op1_ptr:
             self.op1_val = CDB_inst.result
             self.op1_ready = True
-        if CDB_inst.ROB_dest == self.op2_ptr:
+        if f'ROB{CDB_inst.ROB_dest}' == self.op2_ptr:
             self.op2_val = CDB_inst.result
             self.op2_ready = True
 

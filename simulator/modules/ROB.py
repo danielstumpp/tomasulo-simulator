@@ -56,7 +56,7 @@ class ROB:
 
     def pop_head(self):
         head_inst = self.entries[self.head_idx]
-        self.entries[self.head_idx].finished = False
+        self.entries[self.head_idx] = None
         self.head_idx = (self.head_idx+1) % self.max_entries
         self.num_entries -= 1
         return head_inst
