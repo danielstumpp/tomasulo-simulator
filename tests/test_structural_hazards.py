@@ -33,3 +33,18 @@ def test_FPA_RS_hazard():
     assert state.registers['F24'] == -5.0
     assert state.registers['F25'] == 9.1
     assert tt_gold == tt_test
+
+
+def test_FPM_RS_hazard():
+    state = simulator.run(root + 'test_FPM_RS_hazard/FPM_RS_hazard.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file(root + 'test_FPM_RS_hazard/FPM_RS_hazard.tt')
+    print(tt_test)
+    assert list(state.RAT.values()) == list(state.RAT.keys())
+    assert state.registers['F5'] == 3.0
+    assert state.registers['F6'] == 12.5
+    assert state.registers['F7'] == 10.0
+    assert state.registers['F8'] == 3.75
+    assert tt_gold == tt_test
