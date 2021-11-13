@@ -86,7 +86,7 @@ class MemoryUnit:
         '''
         if self.memory_busy:
             for rs in self.RS:
-                if state.clock_cycle == rs.instruction.mem_cycle_end:
+                if rs.instruction.mem_cycle_end is not None and state.clock_cycle == rs.instruction.mem_cycle_end:
                     self.memory_busy = False
                     if rs.instruction.type == 'LD':
                         load_val = state.memory[rs.mem_address]
@@ -124,8 +124,7 @@ class MemoryUnit:
         next_load = self.next_ready_load(clock_cycle)
         if not self.memory_busy and next_load is not None and next_load.instruction.execute_cycle_end < clock_cycle:
             next_load.instruction.mem_cycle_start = clock_cycle
-            next_load.instruction.mem_cycle_end = clock_cycle + \
-                (self.memCycles - 1)
+            next_load.instruction.mem_cycle_end = clock_cycle + (self.memCycles - 1)
             self.memory_busy = True
 
     def alloc_instance(self):

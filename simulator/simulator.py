@@ -125,7 +125,7 @@ def memory_stage(state: State):
 
     # Put loads in memory unit
     state.LSU.try_send_load(state.clock_cycle)
-
+  
 
 def writeback_stage(state: State):
     '''
@@ -217,7 +217,6 @@ def commit_stage(state: State):
         return  # still waiting for head to finish, no commits
 
     # TODO: Add `fire off exceptions' not sure what this was planned to be
-
 
 def clock_tick(state: State):
     '''
