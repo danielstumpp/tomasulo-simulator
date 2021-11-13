@@ -18,6 +18,8 @@ class TimingTable:
         self.mem_end = []
         self.write_back = []
         self.commit = []
+        self.instructions = []
+        self.from_state = False
 
     def __eq__(self, other) -> bool:
         """ Overloaded equality operator to compare timing tables"""
@@ -36,6 +38,25 @@ class TimingTable:
             # find and replace '-' with None in all entries
             self._standardize_format()
             other._standardize_format()
+            
+            if self.from_state:
+                for i in range(len(self.instructions)):
+                    if self.instructions[i].type == 'SD':
+                        self.commit = self.mem_start[i]+'-'+self.mem_end[i]
+                        self.mem_start[i] = self.mem_end[i] = '-'
+
+            if other.from_state:
+                for i in range(len(other.instructions)):
+                    if other.instructions[i].type == 'SD':
+                        other.commit[i] = other.mem_start[i]+'-'+other.mem_end[i]
+                        other.mem_start[i] = other.mem_end[i] = '-'                
+            
+            print(other.commit)
+            print(self.commit)
+            print(other.mem_start)
+            print(self.mem_start)
+            print(other.mem_end)
+            print(self.mem_end)
 
             vals_valid = ((self.issue == other.issue) and
                           (self.ex_start == other.ex_start) and
@@ -55,8 +76,12 @@ class TimingTable:
         self._standardize_format()
 
         for i in range(len(self.issue)):
-            row = ['I{}'.format(i), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
-                   self.mem_start[i]+'-'+self.mem_end[i], self.write_back[i], self.commit[i]]
+            if self.from_state and self.instructions[i].type == 'SD':
+                row = ['I{}'.format(i), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
+                       '---', self.write_back[i], self.mem_start[i]+'-'+self.mem_end[i]]
+            else:
+                row = ['I{}'.format(i), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
+                    self.mem_start[i]+'-'+self.mem_end[i], self.write_back[i], self.commit[i]]
             tbl.add_row(row)
 
         return tbl.get_string()
@@ -73,6 +98,9 @@ class TimingTable:
             self.mem_end.append(inst.mem_cycle_end)
             self.write_back.append(inst.writeback_cycle)
             self.commit.append(inst.commit_cycle)
+        
+        self.instructions = state.completed_instructions
+        self.from_state = True
 
         return True
 
