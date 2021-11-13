@@ -30,15 +30,15 @@ class MemoryUnit:
     def available_RS(self):
         return len(self.RS) < self.numRS
 
-    def rs_mem_is_ready(self, rs):
+    def rs_mem_is_ready(self, rs, clock_cycle):
         '''
         Is this RS ready to be sent to memory?
         This is done in memory stage
         '''
         if rs.instruction.type == 'LD':
-            return rs.is_complete()
-        if rs.intruction.type == 'SD':
-            return rs.op1_ready and rs.is_complete()
+            return rs.is_complete(clock_cycle)
+        if rs.instruction.type == 'SD':
+            return rs.op1_ready and rs.is_complete(clock_cycle)
 
     def rs_is_ready(self, rs, clock_cycle):
         '''
@@ -87,6 +87,7 @@ class MemoryUnit:
                         print(load_val)
                     if rs.instruction.type == 'SD':
                         state.memory[rs.mem_address] = rs.op1_val
+                        self.RS.remove(rs)
 
     def try_put_CDB(self, clock_cycle):
         if len(self.CDB_buffer) < self.CDB_capacity:
@@ -98,7 +99,7 @@ class MemoryUnit:
     def store_forward(self, clock_cycle):
         for i, rs in enumerate(self.RS):
             # Look through whole LSQ for possible forwards
-            if rs.instruction.type == 'SD' and self.rs_mem_is_ready(rs):
+            if rs.instruction.type == 'SD' and self.rs_mem_is_ready(rs, clock_cycle):
                 for j, rs_target in enumerate(self.RS[i+1:]):
                     # Look at all subsequent instructions for loads
                     if rs_target.instruction.type == 'SD' and (not rs_target.is_complete() or
@@ -129,10 +130,10 @@ class MemoryUnit:
     def calculate_result(self, rs):
         if rs.instruction.type == 'LD':
             assert (rs.op1_val + rs.instruction.offset)/4 % 1 == 0, 'Address not word aligned'
-            return (rs.op1_val + rs.instruction.offset)/4
+            return (rs.op1_val + rs.instruction.offset)//4
         if rs.instruction.type == 'SD':
             assert (rs.op2_val + rs.instruction.offset)/4 % 1 == 0, 'Address not word aligned'
-            return rs.op2_val + rs.instruction.offset
+            return (rs.op2_val + rs.instruction.offset)//4
 
     def get_oldest_ready(self, clock_cycle):
         if len(self.CDB_buffer) > 0:

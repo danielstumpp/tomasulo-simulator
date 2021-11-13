@@ -199,6 +199,21 @@ def commit_stage(state: State):
         else:
             return # the head just finished on this cycle, so don't commit
     else:
+        if state.ROB.head_is_store():
+            commit_inst = state.ROB.peak_head()
+            # Store instruction at head, it is ready for memory unit
+            lsq = state.LSU.RS[0]
+            assert lsq.instruction.issue_cycle == commit_inst.issue_cycle, 'These should be the same instruction'
+
+            if not state.LSU.memory_busy and state.LSU.rs_mem_is_ready(lsq, state.clock_cycle-1):
+                state.LSU.memory_busy = True
+                commit_inst.mem_cycle_start = state.clock_cycle
+                commit_inst.mem_cycle_end = state.clock_cycle + (state.LSU.memCycles - 1)
+                
+                commit_inst.commit_cycle = state.clock_cycle
+                state.completed_instructions.append(commit_inst)
+                state.committed += 1
+                state.ROB.pop_head()
         return  # still waiting for head to finish, no commits
 
     # TODO: Add `fire off exceptions' not sure what this was planned to be
@@ -218,7 +233,7 @@ def clock_tick(state: State):
     commit_stage(state)
 
     # Check if program has finished
-    if not good_issue and state.ROB.num_entries == 0 and state.issued == state.committed:
+    if not good_issue and state.ROB.num_entries == 0 and state.issued == state.committed and not state.LSU.memory_busy:
         return False
     else:
         return True

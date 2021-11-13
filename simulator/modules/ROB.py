@@ -54,6 +54,9 @@ class ROB:
     def head_ready(self) -> bool:
         return self.entries[self.head_idx] is not None and self.entries[self.head_idx].finished
 
+    def head_is_store(self) -> bool:
+        return self.entries[self.head_idx] is not None and self.entries[self.head_idx].instruction.type == 'SD'
+
     def pop_head(self):
         head_inst = self.entries[self.head_idx]
         self.entries[self.head_idx] = None

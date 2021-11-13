@@ -8,6 +8,7 @@ import csv
 
 class TimingTable:
     """Timing table class for easy testing and comparison"""
+    # TODO: Interpret Store mem cycles as cycles in commit stage
 
     def __init__(self) -> None:
         self.issue = []
