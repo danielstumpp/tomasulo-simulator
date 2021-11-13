@@ -48,3 +48,19 @@ def test_FPM_RS_hazard():
     assert state.registers['F7'] == 10.0
     assert state.registers['F8'] == 3.75
     assert tt_gold == tt_test
+
+
+def test_LSU_RS_hazard():
+    state = simulator.run(root + 'test_LSU_RS_hazard/LSU_RS_hazard.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file(root + 'test_LSU_RS_hazard/LSU_RS_hazard.tt')
+    print(state.get_instruction_table())
+    print(tt_test)
+    assert list(state.RAT.values()) == list(state.RAT.keys())
+    assert state.registers['F1'] == 1.5
+    assert state.registers['F2'] == 10.0
+    assert state.registers['F3'] == -1.0
+    assert state.memory[3] == 1.5
+    assert tt_gold == tt_test
