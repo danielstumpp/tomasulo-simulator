@@ -1,12 +1,12 @@
 # yaml name field
-name: add
+name: test1_config
 
 # Functional Unit Resources
 FUs:
   # integer adders
   IA:
     numRS: 2
-    exCycles: 2
+    exCycles: 1
     memCycles: 0
     instances: 1
   FPA:
@@ -26,9 +26,9 @@ FUs:
     instances: 1
 
 ROBentries: 128
-CDBbufferLength: 10
+CDBbufferLength: 1
 
 # init files
-#memInitFile: tests/inputs/mem/mem1.mem
-regInitFile: tests/inputs/reg/reg1.reg
-instFile: tests/inputs/inst/add_single.asm
+memInitFile: tests/inputs/test_parsers/mem1.mem
+regInitFile: tests/inputs/test_parsers/reg1.reg
+instFile: tests/inputs/test_parsers/inst1.asm

@@ -1,12 +1,14 @@
 from simulator import simulator
 from simulator.modules.timing_table import TimingTable
 
+root = 'tests/inputs/test_dep_inst/'
+
 def test_addi_dep_inst():
-    state = simulator.run('tests/inputs/config/addi_dep.yml')
+    state = simulator.run(root + 'test_addi_dep_inst/addi_dep.yml')
     tt_test = TimingTable()
     tt_gold = TimingTable()
     tt_test.load_from_state(state)
-    tt_gold.load_from_file('tests/inputs/timing/addi_dep.tt')
+    tt_gold.load_from_file(root + 'test_addi_dep_inst/addi_dep.tt')
     assert list(state.RAT.values()) == list(state.RAT.keys())
     assert state.registers['R5'] == 100
     assert state.registers['R6'] == 115
@@ -14,11 +16,11 @@ def test_addi_dep_inst():
     
     
 def test_mult_d_dep_inst():
-    state = simulator.run('tests/inputs/config/mult_d_dep.yml')
+    state = simulator.run(root + 'test_mult_d_dep_inst/mult_d_dep.yml')
     tt_test = TimingTable()
     tt_gold = TimingTable()
     tt_test.load_from_state(state)
-    tt_gold.load_from_file('tests/inputs/timing/mult_d_dep.tt')
+    tt_gold.load_from_file(root + 'test_mult_d_dep_inst/mult_d_dep.tt')
     print(tt_test)
     assert list(state.RAT.values()) == list(state.RAT.keys())
     assert state.registers['F10'] == 9.0

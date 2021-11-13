@@ -29,6 +29,6 @@ ROBentries: 128
 CDBbufferLength: 10
 
 # init files
-#memInitFile: tests/inputs/mem/mem1.mem
-#regInitFile: tests/inputs/reg/reg1.reg
-instFile: tests/inputs/inst/addi_single.asm
+memInitFile: tests/inputs/test_single_inst/test_ld_one_inst/mem1.mem
+regInitFile: tests/inputs/test_single_inst/test_ld_one_inst/reg1.reg
+instFile: tests/inputs/test_single_inst/test_ld_one_inst/ld_single.asm

@@ -1,17 +1,17 @@
 # yaml name field
-name: sub
+name: addi_dep
 
 # Functional Unit Resources
 FUs:
   # integer adders
   IA:
     numRS: 2
-    exCycles: 2
+    exCycles: 1
     memCycles: 0
     instances: 1
   FPA:
     numRS: 3
-    exCycles: 4
+    exCycles: 3
     memCycles: 0
     instances: 1
   FPM:
@@ -25,10 +25,10 @@ FUs:
     memCycles: 10
     instances: 1
 
-ROBentries: 128
+ROBentries: 10
 CDBbufferLength: 10
 
 # init files
 #memInitFile: tests/inputs/mem/mem1.mem
-regInitFile: tests/inputs/reg/reg1.reg
-instFile: tests/inputs/inst/sub_d_single.asm
+#regInitFile: tests/inputs/reg/reg1.reg
+instFile: tests/inputs/test_dep_inst/test_addi_dep_inst/addi_dep.asm

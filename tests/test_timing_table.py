@@ -39,8 +39,8 @@ from simulator.modules.func_units import initialize_units
  """
 
 def test_dummy_csv_tt_wrong():
-    ttfn = 'tests/inputs/timing/dummy2.tt'
-    configfn = 'tests/inputs/config/test1_config.yml'
+    ttfn = 'tests/inputs/test_parsers/dummy2.tt'
+    configfn = 'tests/inputs/test_parsers/test1_config.yml'
     state = State()
     psr.load_config(state, configfn)
     tt1 = TimingTable()
