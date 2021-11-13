@@ -83,11 +83,11 @@ def test_ld_one_inst():
 
 
 def test_sd_one_inst():
-    state = simulator.run('tests/inputs/config/sd_single.yml')
+    state = simulator.run('tests/inputs/test_single_inst/test_sd_one_inst/sd_single.yml')
     tt_test = TimingTable()
     tt_gold = TimingTable()
     tt_test.load_from_state(state)
-    tt_gold.load_from_file('tests/inputs/timing/sd_single.tt')
+    tt_gold.load_from_file('tests/inputs/test_single_inst/test_sd_one_inst/sd_single.tt')
     print(tt_test)
     print(state.memory)
     assert len(state.LSU.RS) == 0
