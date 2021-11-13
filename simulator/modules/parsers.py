@@ -211,6 +211,15 @@ def parse_instructions(state: State, asm_file: str):
             else:
                 print('ERROR: Invalid Instruction -> line ', i+1)
                 return False
+        elif len(line) == 1:
+            op = line[0].strip().upper()
+            if op != 'NOP':
+                return False
+            
+            inst = Instruction()
+            inst.str = op
+            inst.type = 'NOP'
+            state.instructions.append(inst)
         else:
             print('ERROR: Invalid Instruction -> line ', i+1)
             return False

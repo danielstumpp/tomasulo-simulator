@@ -1,6 +1,6 @@
 """ Defines instruction class """
 
-VALID_INSTRUCTIONS = ['LD', 'SD', 'BEQ', 'BNE',
+VALID_INSTRUCTIONS = ['NOP', 'LD', 'SD', 'BEQ', 'BNE',
                       'ADD', 'ADD.D', 'ADDI', 'SUB', 'SUB.D', 'MULT.D']
 
 
@@ -53,6 +53,8 @@ class Instruction:
             return None, self.Fa, self.Ra
         if type == 'LD':
             return self.Fa, self.Ra, None
+        if type == 'NOP':
+            return None, None, None
 
 
     def __str__(self) -> str:

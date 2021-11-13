@@ -39,13 +39,10 @@ def issue_stage(state: State):
 
     # Look at RAT
     dest, op1, op2 = instruction.get_instruction_registers()
-    print(op1,' ',op2)
     if op1 is not None:
         rs_entry.op1_ptr = state.RAT[op1]
     if op2 is not None:
         rs_entry.op2_ptr = state.RAT[op2]
-        
-    print(rs_entry.op1_ptr,' ',rs_entry.op2_ptr)
 
     # Fetch values that are ready
     if rs_entry.op1_ptr in state.registers.keys():
