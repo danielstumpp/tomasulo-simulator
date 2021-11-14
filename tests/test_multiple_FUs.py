@@ -33,3 +33,19 @@ def test_multiple_FPM():
     assert state.registers['F4'] == 20
     assert state.registers['F5'] == 5
     assert tt_gold == tt_test
+    
+def test_multiple_IA():
+    state = simulator.run(root + 'test_multiple_IA/multiple_IA.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file(root + 'test_multiple_IA/multiple_IA.tt')
+    assert list(state.RAT.values()) == list(state.RAT.keys())
+    assert state.registers['R10'] == 1
+    assert state.registers['R11'] == 3
+    assert state.registers['R12'] == 4
+    assert state.registers['R14'] == 10
+    assert state.registers['R13'] == 5
+    print(tt_gold)
+    assert tt_gold == tt_test
+    

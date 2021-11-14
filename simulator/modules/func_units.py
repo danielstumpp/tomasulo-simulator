@@ -72,11 +72,11 @@ class FunctionalUnit:
 
     def __str__(self) -> str:
         """ print functional unit table """
-        tbl = PrettyTable(['Op', 'Dest-Tag', 'Tag1', 'Tag2', 'Val1', 'Val2'])
+        tbl = PrettyTable(['Op', 'Dest-Tag', 'Tag1', 'Tag2', 'Val1', 'Val2','Executing'])
 
         for rs in self.RS:
             tbl.add_row([rs.instruction.str, 'ROB{}'.format(rs.instruction.ROB_dest),
-            str(rs.op1_ptr), str(rs.op2_ptr), str(rs.op1_val), str(rs.op2_val)])
+            str(rs.op1_ptr), str(rs.op2_ptr), str(rs.op1_val), str(rs.op2_val), str(rs.executing)])
 
         return tbl.get_string()
 

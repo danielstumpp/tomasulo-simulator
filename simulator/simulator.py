@@ -248,6 +248,7 @@ def run(config_file):
 
     while clock_tick(state):
         print(f'--------- Cycle {state.clock_cycle} ---------')
+        #print(state.IA.free_instances)
         #print(state.get_RAT_table())
         #print(state.get_ROB_table())
         #print(state.get_register_table())
@@ -256,5 +257,6 @@ def run(config_file):
         
     tt = TimingTable()
     tt.load_from_state(state)
+    print(state.get_instruction_table())
     print(tt)
     return state
