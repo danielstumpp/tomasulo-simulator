@@ -108,21 +108,33 @@ class FunctionalUnit:
             rs.instruction.execute_cycle_end = clock_cycle + (self.exCycles-1)
             self.alloc_instance()
 
-    def check_done(self, clock_cycle):
+    def check_done(self, state):
         '''
         TODO: Make RS hold return value of ex and free up ALU even if CDB is full.
         '''
-        rs_complete = [rs for rs in self.RS if rs.is_complete(clock_cycle)]
+        rs_complete = [rs for rs in self.RS if rs.is_complete(state.clock_cycle)]
         rs_complete.sort(key=lambda x: x.instruction.issue_cycle)
         for rs in rs_complete:
             if len(self.CDB_buffer) < self.CDB_capacity:
 
                 rs.instruction.result = self.calculate_result(rs)
 
-                self.CDB_buffer.append(rs.instruction)
-                self.RS.remove(rs)
+                # Handle branch resolution
+                if rs.instruction.type in ['BEQ', 'BNE']:
+                    if rs.instruction.result:
+                        state.PC = state.PC + rs.instruction.offset
+                    state.PC += 1
+                    state.stalling = False
+                    state.completed_instructions.append(rs.instruction)
+                    state.committed += 1
+                   
+                else:
+                    # Non-branch instructions go in the CDB
+                    self.CDB_buffer.append(rs.instruction)
 
+                self.RS.remove(rs)
                 self.dealloc_instance()
+
 
     def get_oldest_ready(self, clock_cycle):
         if len(self.CDB_buffer) > 0:
@@ -154,10 +166,14 @@ class FunctionalUnit:
             res = rs_entry.op1_val + rs_entry.op2_val
         elif itype in ['SUB', 'SUB.D']:
             res = rs_entry.op1_val - rs_entry.op2_val
-        elif itype in ['MULT.D']:
+        elif itype == 'MULT.D':
             res = rs_entry.op1_val * rs_entry.op2_val
+        elif itype == 'BNE':
+            res = rs_entry.op1_val != rs_entry.op2_val
+        elif itype == 'BEQ':
+            res = rs_entry.op1_val == rs_entry.op2_val
         else:
-            assert False
+            return None
         return res
 
 

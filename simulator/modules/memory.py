@@ -72,9 +72,9 @@ class MemoryUnit:
 
             self.alloc_instance()
 
-    def check_done(self, clock_cycle):
+    def check_done(self, state):
         # Check that ALU computation is done
-        rs_complete = [rs for rs in self.RS if (rs.is_complete(clock_cycle) and rs.mem_address is None)]
+        rs_complete = [rs for rs in self.RS if (rs.is_complete(state.clock_cycle) and rs.mem_address is None)]
         rs_complete.sort(key=lambda x: x.instruction.issue_cycle)
         if len(rs_complete) > 0:
             rs = rs_complete[0]
@@ -127,6 +127,7 @@ class MemoryUnit:
             next_load.instruction.mem_cycle_start = clock_cycle
             next_load.instruction.mem_cycle_end = clock_cycle + (self.memCycles - 1)
             self.memory_busy = True
+            self.memory_free_cycle = clock_cycle + self.memCycles
 
     def alloc_instance(self):
         self.ALU_free = False

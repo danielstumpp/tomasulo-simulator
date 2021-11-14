@@ -20,6 +20,9 @@ def issue_stage(state: State):
     1.4 Put instruction in ROB, updating RAT to point output register to ROB
     1.5 Increment PC if instruction was issued
     '''
+    if state.stalling:
+        return False
+
     instruction = fetch_instruction(state)
     if not instruction:
         # PC is greater than length of instructions
@@ -69,16 +72,24 @@ def issue_stage(state: State):
     FU.RS.append(rs_entry)
 
     # Put it in the ROB
-    rob_idx = state.ROB.allocate_new(instruction)
-    instruction.ROB_dest = rob_idx
+    if instruction.type not in ['BEQ', 'BNE']:
+        rob_idx = state.ROB.allocate_new(instruction)
+        instruction.ROB_dest = rob_idx
 
-    # Touch the RAT, points to ROB
-    if dest is not None:
-        state.RAT[dest] = f'ROB{rob_idx}'
+        # Touch the RAT, points to ROB
+        if dest is not None:
+            state.RAT[dest] = f'ROB{rob_idx}'
 
     # Increment PC, change when we do branches
-    state.PC += 1
     state.issued +=1
+
+    # Stalling branches
+    if instruction.type in ['BEQ', 'BNE']:
+        state.stalling = True
+
+    if not state.stalling:
+        state.PC += 1
+        
     return True
 
 
@@ -102,7 +113,7 @@ def execute_stage(state: State):
 
     for FU in [state.IA, state.FPA, state.FPM, state.LSU]:
         # Clear out completed values, free up reservation station, add to CDB buf
-        FU.check_done(state.clock_cycle)
+        FU.check_done(state)
 
     
 
@@ -238,7 +249,8 @@ def clock_tick(state: State):
     commit_stage(state)
 
     # Check if program has finished
-    if not good_issue and state.ROB.num_entries == 0 and state.issued == state.committed and not state.LSU.memory_busy:
+    can_issue = state.PC < len(state.instructions)
+    if not can_issue and state.ROB.num_entries == 0 and state.issued == state.committed and not state.LSU.memory_busy:
         return False
     else:
         return True

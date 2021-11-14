@@ -9,7 +9,6 @@ def test_store_forward():
     tt_gold = TimingTable()
     tt_test.load_from_state(state)
     tt_gold.load_from_file(root + 'test_store_forward/store_forward.tt')
-    print(tt_test)
     assert list(state.RAT.values()) == list(state.RAT.keys())
     assert state.registers['F2'] == 6.5
     assert state.memory[4] == 6.5
