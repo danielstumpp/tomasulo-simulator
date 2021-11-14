@@ -44,6 +44,14 @@ class State:
         
         self.issued = 0
         self.committed = 0
+    
+    def set_reg(self, reg: str, val):
+        assert reg in self.registers.keys(), 'register key must be in range'
+        if reg[:1] == 'R':
+            assert val == int(val), 'only integers can be stored in integer registers'            
+        if reg == 'R0':
+            val = 0        
+        self.registers[reg] = val
 
         # Flag to stall issue stage on branches
         self.stalling = False

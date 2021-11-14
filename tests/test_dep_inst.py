@@ -28,3 +28,15 @@ def test_mult_d_dep_inst():
     assert tt_gold == tt_test
 
 
+def test_R0_false_dep():
+    state = simulator.run(root + 'test_R0_false_dep/R0_false_dep.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file(root + 'test_R0_false_dep/R0_false_dep.tt')
+    assert list(state.RAT.values()) == list(state.RAT.keys())
+    assert state.registers['R0'] == 0
+    assert state.registers['F1'] == 25
+    assert state.registers['R1'] == 4
+    assert tt_gold == tt_test
+

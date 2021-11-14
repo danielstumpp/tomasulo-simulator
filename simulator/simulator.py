@@ -43,9 +43,15 @@ def issue_stage(state: State):
     # Look at RAT
     dest, op1, op2 = instruction.get_instruction_registers()
     if op1 is not None:
-        rs_entry.op1_ptr = state.RAT[op1]
+        if op1 == 'R0':
+            rs_entry.op1_ptr = op1
+        else:
+            rs_entry.op1_ptr = state.RAT[op1]
     if op2 is not None:
-        rs_entry.op2_ptr = state.RAT[op2]
+        if op2 == 'R0':
+            rs_entry.op2_ptr = op1
+        else:
+            rs_entry.op2_ptr = state.RAT[op2]
 
     # Fetch values that are ready
     if rs_entry.op1_ptr in state.registers.keys():
@@ -57,7 +63,7 @@ def issue_stage(state: State):
         if state.ROB.entries[rob_idx].finished:
             rs_entry.op1_val = state.ROB.entries[rob_idx].instruction.result
             rs_entry.op1_ready = True
-
+        
     if rs_entry.op2_ptr in state.registers.keys():
         rs_entry.op2_val = state.registers[rs_entry.op2_ptr]
         rs_entry.op2_ready = True
@@ -201,7 +207,7 @@ def commit_stage(state: State):
             # update the ARF
             dest, _, _ = commit_inst.get_instruction_registers()
             if dest is not None:
-                state.registers[dest] = commit_inst.result
+                state.set_reg(dest, commit_inst.result)
 
                 # check if rat same as ROB
                 if state.RAT[dest] == f'ROB{commit_inst.ROB_dest}':
