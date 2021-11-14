@@ -34,7 +34,7 @@ class ROB:
         return tbl.get_string()
 
     def is_full(self):
-        return (self.write_idx+1) % self.max_entries == self.head_idx
+        return self.num_entries == self.max_entries
 
     def allocate_new(self, inst):
         '''
