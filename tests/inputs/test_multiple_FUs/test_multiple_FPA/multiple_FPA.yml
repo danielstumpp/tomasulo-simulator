@@ -1,0 +1,34 @@
+# yaml name field
+name: multiple_FPA
+
+# Functional Unit Resources
+FUs:
+  # integer adders
+  IA:
+    numRS: 2
+    exCycles: 1
+    memCycles: 0
+    instances: 1
+  FPA:
+    numRS: 5
+    exCycles: 3
+    memCycles: 0
+    instances: 4
+  FPM:
+    numRS: 2
+    exCycles: 20
+    memCycles: 0
+    instances: 1
+  LSU:
+    numRS: 2
+    exCycles: 1
+    memCycles: 10
+    instances: 1
+
+ROBentries: 64
+CDBbufferLength: 10
+
+# init files
+#memInitFile: tests/inputs/mem/mem1.mem
+regInitFile: tests/inputs/test_multiple_FUs/test_multiple_FPA/registers.reg
+instFile: tests/inputs/test_multiple_FUs/test_multiple_FPA/multiple_FPA.asm

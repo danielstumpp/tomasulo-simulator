@@ -254,5 +254,7 @@ def run(config_file):
         #print(state.get_RS_table())
         #input()
         
-    
+    tt = TimingTable()
+    tt.load_from_state(state)
+    print(tt)
     return state
