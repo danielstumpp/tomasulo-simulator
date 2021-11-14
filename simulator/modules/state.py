@@ -44,6 +44,9 @@ class State:
         
         self.issued = 0
         self.committed = 0
+        
+        # branch stuff
+        self.stalling = False
     
     def set_reg(self, reg: str, val):
         assert reg in self.registers.keys(), 'register key must be in range'
