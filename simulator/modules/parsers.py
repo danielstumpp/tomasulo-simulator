@@ -86,7 +86,7 @@ def init_registers(state: State, reg_file: str):
             return False
         else:
             # everything is good, put into register
-            state.registers[reg] = val
+            state.set_reg(reg, val)
 
     return True
 
