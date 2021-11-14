@@ -16,6 +16,7 @@ class MemoryUnit:
         self.ALU_free = True
 
         self.memory_busy = False
+        self.memory_free_cycle = 0
 
     def next_ready_load(self, clock_cycle):
         '''

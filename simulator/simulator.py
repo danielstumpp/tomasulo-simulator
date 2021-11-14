@@ -210,8 +210,9 @@ def commit_stage(state: State):
             lsq = state.LSU.RS[0]
             assert lsq.instruction.issue_cycle == commit_inst.issue_cycle, 'These should be the same instruction'
 
-            if not state.LSU.memory_busy and state.LSU.rs_mem_is_ready(lsq, state.clock_cycle-1):
+            if state.clock_cycle >= state.LSU.memory_free_cycle and state.LSU.rs_mem_is_ready(lsq, state.clock_cycle-1):
                 state.LSU.memory_busy = True
+                state.LSU.memory_free_cycle = state.clock_cycle + state.LSU.memCycles
                 commit_inst.mem_cycle_start = state.clock_cycle
                 commit_inst.mem_cycle_end = state.clock_cycle + (state.LSU.memCycles - 1)
                 
