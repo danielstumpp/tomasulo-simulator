@@ -116,17 +116,20 @@ def memory_stage(state: State):
     1.2 If you can, do store forwarding.
     1.3 Send memory instruction.
     '''
+
+    # Do store-forwarding
+    state.LSU.store_forward(state.clock_cycle)
+    
+    # Put loads in memory unit
+    state.LSU.try_send_load(state.clock_cycle)
+
     # Free up the memory unit if the busy instruction finished this cycle
     state.LSU.check_memory_done(state)
 
     # Try to put finished loads on the CDB
     state.LSU.try_put_CDB(state.clock_cycle)
 
-    # Do store-forwarding
-    state.LSU.store_forward(state.clock_cycle)
 
-    # Put loads in memory unit
-    state.LSU.try_send_load(state.clock_cycle)
   
 
 def writeback_stage(state: State):

@@ -99,7 +99,7 @@ class MemoryUnit:
     def try_put_CDB(self, clock_cycle):
         if len(self.CDB_buffer) < self.CDB_capacity:
             for rs in self.RS:
-                if rs.instruction.mem_cycle_end is not None and clock_cycle > rs.instruction.mem_cycle_end:
+                if rs.instruction.mem_cycle_end is not None and clock_cycle >= rs.instruction.mem_cycle_end:
                     self.CDB_buffer.append(rs.instruction)
                     self.RS.remove(rs)
 
@@ -143,8 +143,8 @@ class MemoryUnit:
 
     def get_oldest_ready(self, clock_cycle):
         if len(self.CDB_buffer) > 0:
-            if self.CDB_buffer[0].execute_cycle_end < clock_cycle:
-                return self.CDB_buffer[0].execute_cycle_end
+            if self.CDB_buffer[0].mem_cycle_end < clock_cycle:
+                return self.CDB_buffer[0].mem_cycle_end
             else:
                 return 2**32
         else:
