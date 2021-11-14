@@ -5,7 +5,7 @@ name: IA_RS_hazard
 FUs:
   # integer adders
   IA:
-    numRS: 2
+    numRS: 1
     exCycles: 1
     memCycles: 0
     instances: 1

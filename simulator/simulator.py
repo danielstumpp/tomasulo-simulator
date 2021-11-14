@@ -95,14 +95,16 @@ def execute_stage(state: State):
     3.2 Move instruction to locally buffered CDB queue (if there is space),
         clearing up RS station.
     '''
+    
+    for FU in [state.IA, state.FPA, state.FPM, state.LSU]:
+        # Allocate instructions to instances
+        FU.try_issue(state.clock_cycle)
 
     for FU in [state.IA, state.FPA, state.FPM, state.LSU]:
         # Clear out completed values, free up reservation station, add to CDB buf
         FU.check_done(state.clock_cycle)
 
-    for FU in [state.IA, state.FPA, state.FPM, state.LSU]:
-        # Allocate instructions to instances
-        FU.try_issue(state.clock_cycle)
+    
 
     # TODO: Branches?
 
