@@ -18,3 +18,18 @@ def test_multiple_FPA():
     assert state.registers['F4'] == 5
     assert state.registers['F5'] == 6
     assert tt_gold == tt_test
+
+
+def test_multiple_FPM():
+    state = simulator.run(root + 'test_multiple_FPM/multiple_FPM.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file(root + 'test_multiple_FPM/multiple_FPM.tt')
+    assert list(state.RAT.values()) == list(state.RAT.keys())
+    assert state.registers['F1'] == 1
+    assert state.registers['F2'] == 2
+    assert state.registers['F3'] == 3
+    assert state.registers['F4'] == 20
+    assert state.registers['F5'] == 5
+    assert tt_gold == tt_test
