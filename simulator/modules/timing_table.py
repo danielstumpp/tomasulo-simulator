@@ -70,10 +70,10 @@ class TimingTable:
 
         for i in range(len(self.issue)):
             if self.from_state and self.instructions[i].type == 'SD':
-                row = ['I{}'.format(i), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
+                row = [self.instructions[i].ID, self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
                        '---', self.write_back[i], self.mem_start[i]+'-'+self.mem_end[i]]
             else:
-                row = ['I{}'.format(i), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
+                row = [self.instructions[i].ID, self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
                     self.mem_start[i]+'-'+self.mem_end[i], self.write_back[i], self.commit[i]]
             tbl.add_row(row)
 
