@@ -1,0 +1,12 @@
+LD, R4, 0(R0)
+ADDI, R5, R0, 2
+ADDI, R1, R0, 1
+ADDI, R2, R0, 1
+ADDI, R3, R0, 1
+BEQ, R4, R5, 5
+ADD, R3, R1, R2
+ADD, R1, R2, R0
+ADD, R2, R3, R0
+ADDI, R5, R5, 1
+BEQ, R0, R0, -6
+SD, R3, 4(R0)
