@@ -2,7 +2,7 @@ from simulator import simulator
 from simulator.modules.state import State
 from simulator.modules.timing_table import TimingTable
 
-root = 'tests/inputs/test_stalling_branch/'
+root = 'tests/inputs/test_branch_prediction/'
 
 def test_beq_taken():
     state = simulator.run(root + 'test_beq_taken/test.yml')

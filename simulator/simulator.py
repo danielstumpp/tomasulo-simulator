@@ -21,12 +21,14 @@ def issue_stage(state: State, state_copies):
     1.4 Put instruction in ROB, updating RAT to point output register to ROB
     1.5 Increment PC if instruction was issued
     '''
-    print(state.PC)
+    # print('PC',state.PC)
     if state.clock_cycle < state.unstall_cycle:
+        print('stalling until cycle', state.unstall_cycle)
         # We are still stalling
         return False
 
     instruction = fetch_instruction(state)
+    instruction = copy.deepcopy(instruction)
     if not instruction:
         # PC is greater than length of instructions
         return False
@@ -40,6 +42,7 @@ def issue_stage(state: State, state_copies):
     if state.ROB.is_full():
         return False
 
+    print('Issuing instruction', instruction)
     instruction.issue_cycle = state.clock_cycle
     rs_entry = RSEntry(instruction, FU.exCycles)
 
@@ -83,26 +86,25 @@ def issue_stage(state: State, state_copies):
     # Increment PC, change when we do branches
     state.issued +=1
 
+    if state.clock_cycle == 12:
+        print('------------------------------ cycle 12')
     
     if instruction.is_branch():
-        if state.recover_branch:
-            print('recovery')
-            instruction.is_bad_branch = True
-            state.recover_branch = False
-            state.PC = state.true_target
+        print('this is a branch')
+        print(instruction.issue_cycle)
+        rob_idx = state.ROB.allocate_new(instruction)
+        instruction.ROB_dest = rob_idx
+        # Implement branch prediction
+        pred_taken, pred_target = state.predictor.get_prediction(state.PC)
+        
+        # Create mapping from branch issue_cycle to the branch variables and state copy
+        recovery_state = copy.deepcopy(state)
+        state_copies[instruction.issue_cycle] = (pred_taken, pred_target, state.PC, recovery_state)
+
+        if pred_taken:
+            state.PC = pred_target
         else:
-            # Implement branch prediction
-            pred_taken, pred_target = state.predictor.get_prediction(state.PC)
-            
-            # Create mapping from branch issue_cycle to the branch variables and state copy
-            recovery_state = copy.deepcopy(state)
-            state_copies[instruction.issue_cycle] = (pred_taken, pred_target, state.PC, recovery_state)
-
-            if pred_taken:
-                state.PC = pred_target
-            else:
-                state.PC += 1
-
+            state.PC += 1
     else:
         # Put it in the ROB
         rob_idx = state.ROB.allocate_new(instruction)
@@ -223,7 +225,15 @@ def commit_stage(state: State):
         # head is ready to commit
         # pop the commit instruction from the ROB
         commit_inst = state.ROB.peak_head()
-        if commit_inst.writeback_cycle < state.clock_cycle: # TODO, update for inst that don't wb
+
+        if commit_inst.is_branch():
+            if state.clock_cycle > commit_inst.execute_cycle_end:
+                commit_inst.commit_cycle = state.clock_cycle
+                state.completed_instructions.append(commit_inst)
+                state.committed += 1
+                state.ROB.pop_head()
+
+        elif commit_inst.writeback_cycle < state.clock_cycle: # TODO, update for inst that don't wb
             # update the ARF
             dest, _, _ = commit_inst.get_instruction_registers()
             if dest is not None:
@@ -283,6 +293,11 @@ def clock_tick(state: State, state_copies):
         recovery_state.unstall_cycle = state.clock_cycle + 2
         state = recovery_state
         state_copies.pop(mispred.issue_cycle)
+        execute_stage(state, state_copies)
+        memory_stage(state)
+        writeback_stage(state)
+        commit_stage(state)
+
         return True, state
 
     # Check if program has finished
@@ -304,18 +319,21 @@ def run(config_file):
 
     initialize_units(state)
 
+    print(state.get_ROB_table())
     loop, new_state = clock_tick(state, state_copies)
     while loop:
-        print(f'--------- Cycle {state.clock_cycle} ---------')
+        
         #print(state.IA.free_instances)
         #print(state.get_RAT_table())
         #print(state.get_ROB_table())
         #print(state.get_register_table())
         #print(state.get_RS_table())
         #input()
+        state = new_state if new_state is not None else state
+        # print(state.get_ROB_table())
+        # print(state.get_RS_table())
         loop, new_state = clock_tick(state, state_copies)
-        if new_state is not None:
-            state = new_state
+        print(f'--------- Cycle {state.clock_cycle} ---------')
         
     tt = TimingTable()
     tt.load_from_state(state)

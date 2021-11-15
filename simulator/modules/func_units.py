@@ -32,13 +32,6 @@ class RSEntry:
 
         self.mem_address = None
 
-
-    def issue_to_ALU(self, clock_cycle):
-        '''
-        TODO decrement free_instances on issue, increment on complete
-        '''
-        pass
-
     def is_complete(self, clock_cycle):
         return self.instruction.execute_cycle_end is not None and clock_cycle >= self.instruction.execute_cycle_end
 
@@ -106,6 +99,7 @@ class FunctionalUnit:
             rs.executing = True
             rs.instruction.execute_cycle_start = clock_cycle
             rs.instruction.execute_cycle_end = clock_cycle + (self.exCycles-1)
+            print(rs.instruction)
             self.alloc_instance()
 
     def check_done(self, state, state_copies):
@@ -122,9 +116,8 @@ class FunctionalUnit:
                 # Handle branch misprediction or do nothing
                 if rs.instruction.is_branch():
                     if rs.instruction.is_bad_branch:
-                        # This branch is being recovered from. It must commit and not create another copy.
-                        state.completed_instructions.append(rs.instruction)
-                        state.committed += 1
+                        print('Recovering from this bad branch in recovery state')
+                        state.ROB.entries[rs.instruction.ROB_dest].finished = True
                     else:
                         print('found branch')
                         pred_taken, pred_target, PC_old, restore_state = state_copies[rs.instruction.issue_cycle]
@@ -132,13 +125,21 @@ class FunctionalUnit:
                         if (rs.instruction.result and pred_taken and pred_target == taken_target) or (not rs.instruction.result and not pred_taken):
                             # We did good. Good prediction
                             print('good prediction')
-                            state.completed_instructions.append(rs.instruction)
-                            state.committed += 1
-                            state_copies.pop(rs.instruction.issue_cycle)
+                            print('popping state copy issue_cycle', rs.instruction.issue_cycle)
+                            # state_copies.pop(rs.instruction.issue_cycle)
+                            state.ROB.entries[rs.instruction.ROB_dest].finished = True
+                        
                         else:
                             print('bad branch')
                             true_PC = taken_target if rs.instruction.result else PC_old + 1
                             restore_state.PC = true_PC
+                            # Find branch issued by copy -> mark as bad branch
+                            bad_branch = [b for b in restore_state.IA.RS if b.instruction.issue_cycle == rs.instruction.issue_cycle][0]
+                            bad_branch.instruction.is_bad_branch = True
+
+                            update_target = taken_target if rs.instruction.result else pred_target
+                            restore_state.predictor.update_predictor(int(rs.instruction.ID[1:]), rs.instruction.result, update_target)
+
                             return rs.instruction
                    
                 else:
@@ -146,7 +147,9 @@ class FunctionalUnit:
                     self.CDB_buffer.append(rs.instruction)
 
                 self.RS.remove(rs)
+                print(rs.instruction)
                 self.dealloc_instance()
+                
 
 
     def get_oldest_ready(self, clock_cycle):
@@ -196,10 +199,12 @@ class IntegerUnit(FunctionalUnit):
 
     def alloc_instance(self):
         self.free_instances -= 1
+        print('Allocate: free_instances:', self.free_instances)
         assert self.free_instances >= 0
 
     def dealloc_instance(self):
         self.free_instances += 1
+        print('Deallocate: free_instances', self.free_instances)
         assert self.free_instances <= self.instances
 
 

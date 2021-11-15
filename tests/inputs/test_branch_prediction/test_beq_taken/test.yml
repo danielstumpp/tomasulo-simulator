@@ -25,10 +25,10 @@ FUs:
     memCycles: 10
     instances: 1
 
-ROBentries: 128
+ROBentries: 5
 CDBbufferLength: 10
 
 # init files
 #memInitFile: tests/inputs/mem/mem1.mem
-regInitFile: tests/inputs/test_stalling_branch/test_bne_taken/test.reg
-instFile: tests/inputs/test_stalling_branch/test_bne_taken/test.asm
+regInitFile: tests/inputs/test_branch_prediction/test_beq_taken/test.reg
+instFile: tests/inputs/test_branch_prediction/test_beq_taken/test.asm

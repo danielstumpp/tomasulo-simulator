@@ -14,3 +14,5 @@ class BranchPredictor:
         pred_idx = branch_PC % 8
         self.BTB[pred_idx] = target
         self.predictors[pred_idx] = taken
+
+        # TODO: call this in func_units

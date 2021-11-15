@@ -30,5 +30,5 @@ CDBbufferLength: 10
 
 # init files
 #memInitFile: tests/inputs/mem/mem1.mem
-regInitFile: tests/inputs/test_stalling_branch/test_beq_taken/test.reg
-instFile: tests/inputs/test_stalling_branch/test_beq_taken/test.asm
+regInitFile: tests/inputs/test_branch_prediction/test_bne_not_taken/test.reg
+instFile: tests/inputs/test_branch_prediction/test_bne_not_taken/test.asm
