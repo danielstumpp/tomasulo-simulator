@@ -80,3 +80,19 @@ def test_ROB_hazard():
     assert state.registers['F3'] == 5.0
     assert state.registers['R4'] == 12
     assert tt_gold == tt_test
+    
+
+def test_SD_RS_hazard():
+    state = simulator.run(root + 'test_SD_RS_hazard/SD_RS_hazard.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file(root + 'test_SD_RS_hazard/SD_RS_hazard.tt')
+    print(state.get_instruction_table())
+    print(tt_test)
+    assert list(state.RAT.values()) == list(state.RAT.keys())
+    assert state.memory[0] == 10
+    assert state.memory[1] == 20
+    assert state.memory[2] == .1
+    assert state.memory[3] == .2
+    assert tt_gold == tt_test
