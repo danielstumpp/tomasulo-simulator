@@ -29,6 +29,6 @@ ROBentries: 10
 CDBbufferLength: 10
 
 # init files
-memInitFile: tests/inputs/test_1_straight_no_dep/test_straight_1/straight_1.mem
-regInitFile: tests/inputs/test_1_straight_no_dep/test_straight_1/straight_1.reg
-instFile: tests/inputs/test_1_straight_no_dep/test_straight_1/straight_1.asm
+memInitFile: tests/inputs/test_report_tests/test_straight_1/straight_1.mem
+regInitFile: tests/inputs/test_report_tests/test_straight_1/straight_1.reg
+instFile: tests/inputs/test_report_tests/test_straight_1/straight_1.asm
