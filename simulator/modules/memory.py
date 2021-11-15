@@ -91,10 +91,15 @@ class MemoryUnit:
                     self.memory_busy = False
                     if rs.instruction.type == 'LD':
                         load_val = state.memory[rs.mem_address]
+                        if 'R' in rs.instruction.Fa:
+                            load_val = int(load_val)
                         rs.instruction.result = load_val
                         print(load_val)
                     if rs.instruction.type == 'SD':
-                        state.memory[rs.mem_address] = rs.op1_val
+                        if 'R' in rs.instruction.Fa:
+                            state.memory[rs.mem_address] = int(rs.op1_val)
+                        else:
+                            state.memory[rs.mem_address] = rs.op1_val
                         self.RS.remove(rs)
 
     def try_put_CDB(self, clock_cycle):
