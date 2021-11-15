@@ -3,6 +3,7 @@
 from prettytable import PrettyTable
 
 from .instruction import Instruction
+from .branch_predictor import BranchPredictor
 
 class State:
     """ Simulator State Object"""
@@ -46,7 +47,8 @@ class State:
         self.committed = 0
         
         # branch stuff
-        self.stalling = False
+        self.unstall_cycle = 0 # cycle on which we are not stalling
+        self.predictor = BranchPredictor()
     
     def set_reg(self, reg: str, val):
         assert reg in self.registers.keys(), 'register key must be in range'
@@ -55,9 +57,6 @@ class State:
         if reg == 'R0':
             val = 0        
         self.registers[reg] = val
-
-        # Flag to stall issue stage on branches
-        self.stalling = False
 
     def get_instruction_table(self) -> str:
         """Return string with table of instructions in state"""

@@ -34,6 +34,8 @@ class Instruction:
         self.ROB_dest = None
         self.result = None
 
+        self.is_bad_branch = False
+
 
     def get_instruction_registers(self):
         '''
@@ -55,6 +57,10 @@ class Instruction:
             return self.Fa, self.Ra, None
         if type == 'NOP':
             return None, None, None
+
+        
+    def is_branch(self):
+        return self.type in ['BEQ', 'BNE']
 
 
     def __str__(self) -> str:

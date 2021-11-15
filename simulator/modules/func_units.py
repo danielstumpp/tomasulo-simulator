@@ -108,7 +108,7 @@ class FunctionalUnit:
             rs.instruction.execute_cycle_end = clock_cycle + (self.exCycles-1)
             self.alloc_instance()
 
-    def check_done(self, state):
+    def check_done(self, state, state_copies):
         '''
         TODO: Make RS hold return value of ex and free up ALU even if CDB is full.
         '''
@@ -119,14 +119,27 @@ class FunctionalUnit:
 
                 rs.instruction.result = self.calculate_result(rs)
 
-                # Handle branch resolution
-                if rs.instruction.type in ['BEQ', 'BNE']:
-                    if rs.instruction.result:
-                        state.PC = state.PC + rs.instruction.offset
-                    state.PC += 1
-                    state.stalling = False
-                    state.completed_instructions.append(rs.instruction)
-                    state.committed += 1
+                # Handle branch misprediction or do nothing
+                if rs.instruction.is_branch():
+                    if rs.instruction.is_bad_branch:
+                        # This branch is being recovered from. It must commit and not create another copy.
+                        state.completed_instructions.append(rs.instruction)
+                        state.committed += 1
+                    else:
+                        print('found branch')
+                        pred_taken, pred_target, PC_old, restore_state = state_copies[rs.instruction.issue_cycle]
+                        taken_target = PC_old + 1 + rs.instruction.offset
+                        if (rs.instruction.result and pred_taken and pred_target == taken_target) or (not rs.instruction.result and not pred_taken):
+                            # We did good. Good prediction
+                            print('good prediction')
+                            state.completed_instructions.append(rs.instruction)
+                            state.committed += 1
+                            state_copies.pop(rs.instruction.issue_cycle)
+                        else:
+                            print('bad branch')
+                            true_PC = taken_target if rs.instruction.result else PC_old + 1
+                            restore_state.PC = true_PC
+                            return rs.instruction
                    
                 else:
                     # Non-branch instructions go in the CDB

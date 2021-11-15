@@ -67,11 +67,16 @@ class TimingTable:
         """timing table string for print() calls"""
         tbl = PrettyTable(['','ISSUE', 'EX', 'MEM', 'WB', 'COMMIT'])
         self._standardize_format()
+        print(self.instructions)
+        print(self.issue)
 
         for i in range(len(self.issue)):
             if self.from_state and self.instructions[i].type == 'SD':
                 row = ['I{}'.format(i), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
                        '---', self.write_back[i], self.mem_start[i]+'-'+self.mem_end[i]]
+            elif self.from_state:
+                row = ['{}'.format(self.instructions[i].ID), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
+                    self.mem_start[i]+'-'+self.mem_end[i], self.write_back[i], self.commit[i]]
             else:
                 row = ['I{}'.format(i), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
                     self.mem_start[i]+'-'+self.mem_end[i], self.write_back[i], self.commit[i]]

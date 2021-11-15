@@ -72,7 +72,7 @@ class MemoryUnit:
 
             self.alloc_instance()
 
-    def check_done(self, state):
+    def check_done(self, state, _):
         # Check that ALU computation is done
         rs_complete = [rs for rs in self.RS if (rs.is_complete(state.clock_cycle) and rs.mem_address is None)]
         rs_complete.sort(key=lambda x: x.instruction.issue_cycle)

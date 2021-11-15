@@ -1,5 +1,6 @@
 
 import argparse
+import copy
 
 from .modules.timing_table import TimingTable
 
@@ -12,7 +13,7 @@ from .modules.func_units import initialize_units, RSEntry
 from .modules.ROB import ROB
 
 
-def issue_stage(state: State):
+def issue_stage(state: State, state_copies):
     '''
     1.1 Check for free reservation station
     1.2 Fill reservation station, remove instruction from queue (or increment PC)
@@ -20,7 +21,9 @@ def issue_stage(state: State):
     1.4 Put instruction in ROB, updating RAT to point output register to ROB
     1.5 Increment PC if instruction was issued
     '''
-    if state.stalling:
+    print(state.PC)
+    if state.clock_cycle < state.unstall_cycle:
+        # We are still stalling
         return False
 
     instruction = fetch_instruction(state)
@@ -77,29 +80,44 @@ def issue_stage(state: State):
     # Put RS entry into RS array in FU
     FU.RS.append(rs_entry)
 
-    # Put it in the ROB
-    if instruction.type not in ['BEQ', 'BNE']:
+    # Increment PC, change when we do branches
+    state.issued +=1
+
+    
+    if instruction.is_branch():
+        if state.recover_branch:
+            print('recovery')
+            instruction.is_bad_branch = True
+            state.recover_branch = False
+            state.PC = state.true_target
+        else:
+            # Implement branch prediction
+            pred_taken, pred_target = state.predictor.get_prediction(state.PC)
+            
+            # Create mapping from branch issue_cycle to the branch variables and state copy
+            recovery_state = copy.deepcopy(state)
+            state_copies[instruction.issue_cycle] = (pred_taken, pred_target, state.PC, recovery_state)
+
+            if pred_taken:
+                state.PC = pred_target
+            else:
+                state.PC += 1
+
+    else:
+        # Put it in the ROB
         rob_idx = state.ROB.allocate_new(instruction)
         instruction.ROB_dest = rob_idx
 
         # Touch the RAT, points to ROB
         if dest is not None:
             state.RAT[dest] = f'ROB{rob_idx}'
-
-    # Increment PC, change when we do branches
-    state.issued +=1
-
-    # Stalling branches
-    if instruction.type in ['BEQ', 'BNE']:
-        state.stalling = True
-
-    if not state.stalling:
+        
         state.PC += 1
         
     return True
 
 
-def execute_stage(state: State):
+def execute_stage(state: State, state_copies):
     '''
     1. Iterate over arithmetic FUs:
     1.1 If FU open and RS entry has ready operands, select oldest valid instructions
@@ -119,7 +137,9 @@ def execute_stage(state: State):
 
     for FU in [state.IA, state.FPA, state.FPM, state.LSU]:
         # Clear out completed values, free up reservation station, add to CDB buf
-        FU.check_done(state)
+        mispred = FU.check_done(state, state_copies)
+        if mispred is not None:
+            return mispred
 
     
 
@@ -241,28 +261,42 @@ def commit_stage(state: State):
 
     # TODO: Add `fire off exceptions' not sure what this was planned to be
 
-def clock_tick(state: State):
+def clock_tick(state: State, state_copies):
     '''
     IF | EX | MEM | WB | COM
     '''
     # tick clock
     state.clock_cycle += 1
 
-    good_issue = issue_stage(state)
-    execute_stage(state)
+    good_issue = issue_stage(state, state_copies)
+    mispred = execute_stage(state, state_copies)
     memory_stage(state)
     writeback_stage(state)
     commit_stage(state)
 
+    if mispred is not None:
+        print('we mispredicted')
+        # handle misprediction recovery
+        print(state_copies)
+        (pred_taken, pred_target, old_PC, recovery_state) = state_copies[mispred.issue_cycle]
+        # Takes 1 cycle to recover from misprediction 
+        recovery_state.unstall_cycle = state.clock_cycle + 2
+        state = recovery_state
+        state_copies.pop(mispred.issue_cycle)
+        return True, state
+
     # Check if program has finished
     can_issue = state.PC < len(state.instructions)
-    if not can_issue and state.ROB.num_entries == 0 and state.issued == state.committed and not state.LSU.memory_busy:
-        return False
+    if not can_issue and not good_issue and state.ROB.num_entries == 0 and state.issued == state.committed and not state.LSU.memory_busy:
+        return False, None
     else:
-        return True
+        return True, None
 
 def run(config_file):
     state = State()
+
+    state_copies = {}
+
     config_success = load_config(state, config_file)
     if not config_success:
         print('Config error. Exiting program')
@@ -270,7 +304,8 @@ def run(config_file):
 
     initialize_units(state)
 
-    while clock_tick(state):
+    loop, new_state = clock_tick(state, state_copies)
+    while loop:
         print(f'--------- Cycle {state.clock_cycle} ---------')
         #print(state.IA.free_instances)
         #print(state.get_RAT_table())
@@ -278,6 +313,9 @@ def run(config_file):
         #print(state.get_register_table())
         #print(state.get_RS_table())
         #input()
+        loop, new_state = clock_tick(state, state_copies)
+        if new_state is not None:
+            state = new_state
         
     tt = TimingTable()
     tt.load_from_state(state)
