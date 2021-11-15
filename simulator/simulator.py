@@ -247,7 +247,7 @@ def commit_stage(state: State):
         else:
             return # the head just finished on this cycle, so don't commit
     else:
-        if state.ROB.head_is_store():
+        if state.ROB.head_is_store() and not state.LSU.memory_busy:
             commit_inst = state.ROB.peak_head()
             # Store instruction at head, it is ready for memory unit
             lsq = state.LSU.RS[0]
