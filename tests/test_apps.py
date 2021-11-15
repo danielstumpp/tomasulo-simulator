@@ -18,5 +18,5 @@ def test_fib():
     print(tt_test)
     print('fib result',state.memory[1])
     # print(state.memory)
-    assert state.memory[1] == 10946
+    assert state.memory[1] == 233
     assert list(state.RAT.values()) == list(state.RAT.keys())
