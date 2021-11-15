@@ -25,7 +25,7 @@ FUs:
     memCycles: 10
     instances: 1
 
-ROBentries: 128
+ROBentries: 10
 CDBbufferLength: 10
 
 # init files
