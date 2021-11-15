@@ -220,8 +220,10 @@ def parse_instructions(state: State, asm_file: str):
             
             inst = Instruction()
             inst.ID = 'I{}'.format(i)
-            inst.str = op
-            inst.type = 'NOP'
+            inst.str = 'NOP'
+            inst.type = 'ADD'
+            inst.is_NOP = True
+            validate_instruction(['ADD', 'R0', 'R0', 'R0'], inst)
             state.instructions.append(inst)
         else:
             print('ERROR: Invalid Instruction -> line ', i+1)

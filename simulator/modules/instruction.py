@@ -35,6 +35,7 @@ class Instruction:
         self.result = None
 
         self.is_bad_branch = False
+        self.is_NOP = False
 
 
     def get_instruction_registers(self):
