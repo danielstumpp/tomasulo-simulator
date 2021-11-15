@@ -193,6 +193,7 @@ def parse_instructions(state: State, asm_file: str):
             else:
                 print('ERROR: Invalid Instruction -> line ', i+1)
                 return False
+            print(inst.ID)
         elif len(line) == 3:
             op = line[0].strip().upper()
             r1 = line[1].strip().upper()
@@ -204,6 +205,7 @@ def parse_instructions(state: State, asm_file: str):
                 return False
 
             inst = Instruction()
+            inst.ID = 'I{}'.format(i)
             inst.str = ', '.join(line)
             valid = validate_instruction([op, r1, offset, ra], inst)
             if valid:
@@ -217,6 +219,7 @@ def parse_instructions(state: State, asm_file: str):
                 return False
             
             inst = Instruction()
+            inst.ID = 'I{}'.format(i)
             inst.str = op
             inst.type = 'NOP'
             state.instructions.append(inst)
