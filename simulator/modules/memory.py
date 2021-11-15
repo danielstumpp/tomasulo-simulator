@@ -140,7 +140,6 @@ class MemoryUnit:
             assert (rs.op1_val + rs.instruction.offset)/4 % 1 == 0, 'Address not word aligned'
             return (rs.op1_val + rs.instruction.offset)//4
         if rs.instruction.type == 'SD':
-            print(rs.op2_val + rs.instruction.offset)
             assert (rs.op2_val + rs.instruction.offset)/4 % 1 == 0, 'Address not word aligned'
             return (rs.op2_val + rs.instruction.offset)//4
 
