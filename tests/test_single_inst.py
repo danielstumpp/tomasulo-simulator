@@ -83,14 +83,30 @@ def test_ld_one_inst():
 
 
 def test_sd_one_inst():
-    state = simulator.run('tests/inputs/test_single_inst/test_sd_one_inst/sd_single.yml')
+    state = simulator.run(root + 'test_sd_one_inst/sd_single.yml')
     tt_test = TimingTable()
     tt_gold = TimingTable()
     tt_test.load_from_state(state)
-    tt_gold.load_from_file('tests/inputs/test_single_inst/test_sd_one_inst/sd_single.tt')
+    tt_gold.load_from_file(root + 'test_sd_one_inst/sd_single.tt')
     print(tt_test)
     print(state.memory)
     assert len(state.LSU.RS) == 0
     assert tt_gold == tt_test
     assert state.memory[4] == 4.5
     assert list(state.RAT.values()) == list(state.RAT.keys())
+
+
+def test_nop_one_inst():
+    state = simulator.run(root + 'test_nop_one_inst/nop_single.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file(root + 'test_nop_one_inst/nop_single.tt')
+    print(tt_test)
+    print(state.memory)
+    assert len(state.LSU.RS) == 0
+    assert state.registers['R0'] == 0
+    assert state.registers['R1'] == 10
+    assert list(state.RAT.values()) == list(state.RAT.keys())
+    assert tt_gold == tt_test
+    
