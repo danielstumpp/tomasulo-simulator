@@ -23,7 +23,7 @@ def issue_stage(state: State, state_copies):
     '''
     # print('PC',state.PC)
     if state.clock_cycle < state.unstall_cycle:
-        print('stalling until cycle', state.unstall_cycle)
+        #print('stalling until cycle', state.unstall_cycle)
         # We are still stalling
         return False
 
@@ -42,7 +42,7 @@ def issue_stage(state: State, state_copies):
     if state.ROB.is_full():
         return False
 
-    print('Issuing instruction', instruction)
+    #print('Issuing instruction', instruction)
     instruction.issue_cycle = state.clock_cycle
     rs_entry = RSEntry(instruction, FU.exCycles)
 
@@ -85,13 +85,9 @@ def issue_stage(state: State, state_copies):
 
     # Increment PC, change when we do branches
     state.issued +=1
-
-    if state.clock_cycle == 12:
-        print('------------------------------ cycle 12')
     
     if instruction.is_branch():
-        print('this is a branch')
-        print(instruction.issue_cycle)
+
         rob_idx = state.ROB.allocate_new(instruction)
         instruction.ROB_dest = rob_idx
         # Implement branch prediction
@@ -285,9 +281,7 @@ def clock_tick(state: State, state_copies):
     commit_stage(state)
 
     if mispred is not None:
-        print('we mispredicted')
         # handle misprediction recovery
-        print(state_copies)
         (pred_taken, pred_target, old_PC, recovery_state) = state_copies[mispred.issue_cycle]
         # Takes 1 cycle to recover from misprediction 
         recovery_state.unstall_cycle = state.clock_cycle + 2
@@ -319,7 +313,7 @@ def run(config_file):
 
     initialize_units(state)
 
-    print(state.get_ROB_table())
+    #print(state.get_ROB_table())
     loop, new_state = clock_tick(state, state_copies)
     while loop:
         
@@ -333,10 +327,6 @@ def run(config_file):
         # print(state.get_ROB_table())
         # print(state.get_RS_table())
         loop, new_state = clock_tick(state, state_copies)
-        print(f'--------- Cycle {state.clock_cycle} ---------')
+        #print(f'--------- Cycle {state.clock_cycle} ---------')
         
-    tt = TimingTable()
-    tt.load_from_state(state)
-    print(state.get_instruction_table())
-    print(tt)
     return state

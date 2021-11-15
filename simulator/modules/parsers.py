@@ -193,7 +193,6 @@ def parse_instructions(state: State, asm_file: str):
             else:
                 print('ERROR: Invalid Instruction -> line ', i+1)
                 return False
-            print(inst.ID)
         elif len(line) == 3:
             op = line[0].strip().upper()
             r1 = line[1].strip().upper()

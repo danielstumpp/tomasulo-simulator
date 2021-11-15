@@ -83,18 +83,41 @@ class State:
                  str(4*(i + 32)), '\033[94m {} \033[0m'.format(str(self.memory[i + 32]))])
 
         return mem_table.get_string()
+    
+    def get_non_zero_memory_table(self) -> str:
+        mem_table = PrettyTable(['Byte Address', 'Value'])
+        for i in range(64):
+            if self.memory[i] != 0:
+                mem_table.add_row([str(i*4), str(self.memory[i])])
+            
+        return mem_table.get_string()
 
     def get_register_table(self) -> str:
         """Return string of register table for state"""
-
-        reg_table = PrettyTable(
+        flist = []
+        rlist = []
+        fval = []
+        rval = []
+        for i in range(32):
+            flist.append(f'F{i}')
+            rlist.append(f'R{i}')
+            fval.append(self.registers[f'F{i}'])
+            rval.append(self.registers[f'R{i}'])
+        
+        r_tab = PrettyTable([' '] + rlist)
+        r_tab.add_row(['value'] + rval)
+        
+        f_tab = PrettyTable([' '] + flist)
+        f_tab.add_row(['value'] + fval)
+        
+        """ reg_table = PrettyTable(
             ['Integer Reg', 'Value', '', 'Float Reg', 'Value '])
         for i in range(32):
             reg_table.add_row(
                 ['R{}'.format(i), '\033[94m {} \033[0m'.format(str(int(self.registers['R{}'.format(i)]))), '',
-                 'F{}'.format(i), '\033[94m {} \033[0m'.format(float(self.registers['F{}'.format(i)]))])
+                 'F{}'.format(i), '\033[94m {} \033[0m'.format(float(self.registers['F{}'.format(i)]))]) """
 
-        return reg_table.get_string()
+        return r_tab.get_string() + '\n' + f_tab.get_string()
 
     def get_RAT_table(self) -> str:
         tbl = PrettyTable(['Arch Reg', 'Mapping ', '', 'Arch Reg ', 'Mapping'])

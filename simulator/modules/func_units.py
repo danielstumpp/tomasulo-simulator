@@ -99,7 +99,6 @@ class FunctionalUnit:
             rs.executing = True
             rs.instruction.execute_cycle_start = clock_cycle
             rs.instruction.execute_cycle_end = clock_cycle + (self.exCycles-1)
-            print(rs.instruction)
             self.alloc_instance()
 
     def check_done(self, state, state_copies):
@@ -116,21 +115,20 @@ class FunctionalUnit:
                 # Handle branch misprediction or do nothing
                 if rs.instruction.is_branch():
                     if rs.instruction.is_bad_branch:
-                        print('Recovering from this bad branch in recovery state')
                         state.ROB.entries[rs.instruction.ROB_dest].finished = True
                     else:
-                        print('found branch')
+                        #print('found branch')
                         pred_taken, pred_target, PC_old, restore_state = state_copies[rs.instruction.issue_cycle]
                         taken_target = PC_old + 1 + rs.instruction.offset
                         if (rs.instruction.result and pred_taken and pred_target == taken_target) or (not rs.instruction.result and not pred_taken):
                             # We did good. Good prediction
-                            print('good prediction')
-                            print('popping state copy issue_cycle', rs.instruction.issue_cycle)
+                            #print('good prediction')
+                            #print('popping state copy issue_cycle', rs.instruction.issue_cycle)
                             # state_copies.pop(rs.instruction.issue_cycle)
                             state.ROB.entries[rs.instruction.ROB_dest].finished = True
                         
                         else:
-                            print('bad branch')
+                            #print('bad branch')
                             true_PC = taken_target if rs.instruction.result else PC_old + 1
                             restore_state.PC = true_PC
                             # Find branch issued by copy -> mark as bad branch
@@ -147,7 +145,6 @@ class FunctionalUnit:
                     self.CDB_buffer.append(rs.instruction)
 
                 self.RS.remove(rs)
-                print(rs.instruction)
                 self.dealloc_instance()
                 
 
@@ -199,12 +196,10 @@ class IntegerUnit(FunctionalUnit):
 
     def alloc_instance(self):
         self.free_instances -= 1
-        print('Allocate: free_instances:', self.free_instances)
         assert self.free_instances >= 0
 
     def dealloc_instance(self):
         self.free_instances += 1
-        print('Deallocate: free_instances', self.free_instances)
         assert self.free_instances <= self.instances
 
 
