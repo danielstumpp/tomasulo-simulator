@@ -58,6 +58,11 @@ class TimingTable:
                           (self.mem_end == other.mem_end) and
                           (self.write_back == other.write_back) and
                           (self.commit == other.commit))
+            
+            # check that instructions are in same order
+            for i in range(len(self.instructions)):
+                if self.instructions[i].ID != other.instructions[i].ID:
+                    return False
 
             return vals_valid
         else:
@@ -72,13 +77,13 @@ class TimingTable:
 
         for i in range(len(self.issue)):
             if self.from_state and self.instructions[i].type == 'SD':
-                row = ['I{}'.format(i), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
+                row = [self.instructions[i].ID, self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
                        '---', self.write_back[i], self.mem_start[i]+'-'+self.mem_end[i]]
             elif self.from_state:
                 row = ['{}'.format(self.instructions[i].ID), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
                     self.mem_start[i]+'-'+self.mem_end[i], self.write_back[i], self.commit[i]]
             else:
-                row = ['I{}'.format(i), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
+                row = [self.instructions[i].ID, self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
                     self.mem_start[i]+'-'+self.mem_end[i], self.write_back[i], self.commit[i]]
             tbl.add_row(row)
 
@@ -120,17 +125,19 @@ class TimingTable:
 
         reader_list = list(reader)
         for line in reader_list:
-            if len(line) != 7:
+            if len(line) != 8:
                 print('ERROR: invalid timing table from file')
                 return False
-
-            self.issue.append(str(line[0].strip()))
-            self.ex_start.append(str(line[1].strip()))
-            self.ex_end.append(str(line[2].strip()))
-            self.mem_start.append(str(line[3].strip()))
-            self.mem_end.append(str(line[4].strip()))
-            self.write_back.append(str(line[5].strip()))
-            self.commit.append(str(line[6].strip()))
+            inst = Instruction()
+            inst.ID = str(line[0].strip().upper())
+            self.instructions.append(inst)
+            self.issue.append(str(line[1].strip()))
+            self.ex_start.append(str(line[2].strip()))
+            self.ex_end.append(str(line[3].strip()))
+            self.mem_start.append(str(line[4].strip()))
+            self.mem_end.append(str(line[5].strip()))
+            self.write_back.append(str(line[6].strip()))
+            self.commit.append(str(line[7].strip()))
 
     def _standardize_format(self) -> None:
         self.issue = [str(v).replace('None', '-') for v in self.issue]

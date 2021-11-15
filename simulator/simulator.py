@@ -52,7 +52,7 @@ def issue_stage(state: State, state_copies):
             rs_entry.op1_ptr = state.RAT[op1]
     if op2 is not None:
         if op2 == 'R0':
-            rs_entry.op2_ptr = op1
+            rs_entry.op2_ptr = op2
         else:
             rs_entry.op2_ptr = state.RAT[op2]
 
