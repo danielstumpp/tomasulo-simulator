@@ -70,22 +70,27 @@ class TimingTable:
 
     def __str__(self) -> str:
         """timing table string for print() calls"""
-        tbl = PrettyTable(['','ISSUE', 'EX', 'MEM', 'WB', 'COMMIT'])
-        self._standardize_format()
-        print(self.instructions)
-        print(self.issue)
+        
+        if self.from_state:
+            tbl = PrettyTable(['', '   ','ISSUE', 'EX', 'MEM', 'WB', 'COMMIT'])
+            self._standardize_format()
 
-        for i in range(len(self.issue)):
-            if self.from_state and self.instructions[i].type == 'SD':
+            for i in range(len(self.issue)):
+                if self.instructions[i].type == 'SD':
+                    row = [self.instructions[i].ID, self.instructions[i].str, self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
+                        '---', self.write_back[i], self.mem_start[i]+'-'+self.mem_end[i]]
+                else:
+                    row = ['{}'.format(self.instructions[i].ID),self.instructions[i].str, self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
+                        self.mem_start[i]+'-'+self.mem_end[i], self.write_back[i], self.commit[i]]
+                tbl.add_row(row)
+        else:
+            tbl = PrettyTable(['', 'ISSUE', 'EX', 'MEM', 'WB', 'COMMIT'])
+            self._standardize_format()
+
+            for i in range(len(self.issue)):
                 row = [self.instructions[i].ID, self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
-                       '---', self.write_back[i], self.mem_start[i]+'-'+self.mem_end[i]]
-            elif self.from_state:
-                row = ['{}'.format(self.instructions[i].ID), self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
-                    self.mem_start[i]+'-'+self.mem_end[i], self.write_back[i], self.commit[i]]
-            else:
-                row = [self.instructions[i].ID, self.issue[i], self.ex_start[i]+'-'+self.ex_end[i],
-                    self.mem_start[i]+'-'+self.mem_end[i], self.write_back[i], self.commit[i]]
-            tbl.add_row(row)
+                        self.mem_start[i]+'-'+self.mem_end[i], self.write_back[i], self.commit[i]]
+                tbl.add_row(row)
 
         return tbl.get_string()
 
