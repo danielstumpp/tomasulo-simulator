@@ -250,19 +250,28 @@ def commit_stage(state: State):
         if state.ROB.head_is_store() and not state.LSU.memory_busy:
             commit_inst = state.ROB.peak_head()
             # Store instruction at head, it is ready for memory unit
-            lsq = state.LSU.RS[0]
-            assert lsq.instruction.issue_cycle == commit_inst.issue_cycle, 'These should be the same instruction'
+            if state.clock_cycle >= state.LSU.memory_free_cycle:
+                lsq = state.LSU.RS[0]
+                assert lsq.instruction.issue_cycle == commit_inst.issue_cycle, 'These should be the same instruction'
 
-            if state.clock_cycle >= state.LSU.memory_free_cycle and state.LSU.rs_mem_is_ready(lsq, state.clock_cycle-1):
-                state.LSU.memory_busy = True
-                state.LSU.memory_free_cycle = state.clock_cycle + state.LSU.memCycles
-                commit_inst.mem_cycle_start = state.clock_cycle
-                commit_inst.mem_cycle_end = state.clock_cycle + (state.LSU.memCycles - 1)
-                
-                commit_inst.commit_cycle = state.clock_cycle
-                state.completed_instructions.append(commit_inst)
-                state.committed += 1
-                state.ROB.pop_head()
+                if state.LSU.rs_mem_is_ready(lsq, state.clock_cycle-1):
+                    state.LSU.memory_busy = True
+                    state.LSU.memory_free_cycle = state.clock_cycle + state.LSU.memCycles
+                    commit_inst.mem_cycle_start = state.clock_cycle
+                    commit_inst.mem_cycle_end = state.clock_cycle + (state.LSU.memCycles - 1)
+                    
+                    commit_inst.commit_cycle = state.clock_cycle
+                    state.completed_instructions.append(commit_inst)
+                    state.committed += 1
+                    state.ROB.pop_head()
+
+                    # Clean up memory LSQ and do store
+                    state.LSU.RS.remove(lsq)
+                    if 'R' in lsq.instruction.Fa:
+                        state.memory[lsq.mem_address] = int(lsq.op1_val)
+                    else:
+                        state.memory[lsq.mem_address] = lsq.op1_val
+
         return  # still waiting for head to finish, no commits
 
     # TODO: Add `fire off exceptions' not sure what this was planned to be

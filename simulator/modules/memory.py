@@ -102,6 +102,9 @@ class MemoryUnit:
                             state.memory[rs.mem_address] = rs.op1_val
                         self.RS.remove(rs)
 
+        if state.clock_cycle >= self.memory_free_cycle:
+            self.memory_busy = False
+
     def try_put_CDB(self, clock_cycle):
         if len(self.CDB_buffer) < self.CDB_capacity:
             for rs in self.RS:
