@@ -20,7 +20,7 @@ FUs:
     memCycles: 0
     instances: 1
   LSU:
-    numRS: 2
+    numRS: 5
     exCycles: 1
     memCycles: 10
     instances: 1
