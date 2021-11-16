@@ -94,3 +94,18 @@ def test_straight_hazards_1():
     assert state.memory[int(60/4)] == 108
     assert state.memory[int(56/4)] == 150
     assert state.memory[12//4] == 2
+
+
+def test_simple_loop_1():
+    state = simulator.run(root + 'test_simple_loop_1/simple_loop_1.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file(root + 'test_simple_loop_1/simple_loop_1.tt')
+    assert list(state.RAT.values()) == list(state.RAT.keys())
+    assert state.registers['R2'] == 5
+    assert state.registers['F4'] == 120
+    assert state.registers['F5'] == sum(range(6))
+    assert state.memory[0] == 120
+    assert state.memory[1] == sum(range(6))
+    #assert tt_gold == tt_test
