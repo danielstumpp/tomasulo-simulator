@@ -109,3 +109,14 @@ def test_simple_loop_1():
     assert state.memory[0] == 120
     assert state.memory[1] == sum(range(6))
     #assert tt_gold == tt_test
+
+
+def test_misprediction_exception():
+    state = simulator.run(root + 'test_misprediction_exception/test.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file(root + 'test_misprediction_exception/test.tt')
+    assert tt_gold == tt_test
+    assert state.memory[0] == 0
+    assert state.memory[1] == 0

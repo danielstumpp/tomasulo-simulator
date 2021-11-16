@@ -1,0 +1,34 @@
+# yaml name field
+name: straight_forwarding_1
+
+# Functional Unit Resources
+FUs:
+  # integer adders
+  IA:
+    numRS: 10
+    exCycles: 3
+    memCycles: 0
+    instances: 1
+  FPA:
+    numRS: 10
+    exCycles: 3
+    memCycles: 0
+    instances: 1
+  FPM:
+    numRS: 10
+    exCycles: 20
+    memCycles: 0
+    instances: 1
+  LSU:
+    numRS: 10
+    exCycles: 1
+    memCycles: 10
+    instances: 1
+
+ROBentries: 64
+CDBbufferLength: 10
+
+# init files
+memInitFile: tests/inputs/test_report_tests/test_misprediction_exception/test.mem
+regInitFile: tests/inputs/test_report_tests/test_misprediction_exception/test.reg
+instFile: tests/inputs/test_report_tests/test_misprediction_exception/test.asm
