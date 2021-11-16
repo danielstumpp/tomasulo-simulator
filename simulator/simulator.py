@@ -221,6 +221,8 @@ def commit_stage(state: State):
         # head is ready to commit
         # pop the commit instruction from the ROB
         commit_inst = state.ROB.peak_head()
+        if commit_inst.fault:
+            return True
 
         if commit_inst.is_branch():
             if state.clock_cycle > commit_inst.execute_cycle_end:
@@ -249,6 +251,8 @@ def commit_stage(state: State):
     else:
         if state.ROB.head_is_store() and not state.LSU.memory_busy:
             commit_inst = state.ROB.peak_head()
+            if commit_inst.fault:
+                return True
             # Store instruction at head, it is ready for memory unit
             lsq = state.LSU.RS[0]
             assert lsq.instruction.issue_cycle == commit_inst.issue_cycle, 'These should be the same instruction'
@@ -286,7 +290,13 @@ def clock_tick(state: State, state_copies):
     mispred = execute_stage(state, state_copies)
     memory_stage(state)
     writeback_stage(state)
-    commit_stage(state)
+    fault = commit_stage(state)
+    
+    if fault == True: # if a fault was committed, then throw error and give up
+        print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n',
+                f'FAULT: Instruction With Exception attempted to commit on cycle {state.clock_cycle}',
+                '\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        return False, state
 
     if mispred is not None:
         # handle misprediction recovery

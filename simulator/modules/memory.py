@@ -146,10 +146,18 @@ class MemoryUnit:
 
     def calculate_result(self, rs):
         if rs.instruction.type == 'LD':
-            assert (rs.op1_val + rs.instruction.offset)/4 % 1 == 0, 'Address not word aligned'
+            #assert (rs.op1_val + rs.instruction.offset)/4 % 1 == 0, 'Address not word aligned'
+            if (rs.op1_val + rs.instruction.offset)/4 % 1 != 0 or \
+                rs.op1_val + rs.instruction.offset < 0 or rs.op1_val + rs.instruction.offset > 255:
+                rs.instruction.fault = True
+                return 0
             return (rs.op1_val + rs.instruction.offset)//4
         if rs.instruction.type == 'SD':
-            assert (rs.op2_val + rs.instruction.offset)/4 % 1 == 0, 'Address not word aligned'
+            #assert (rs.op2_val + rs.instruction.offset)/4 % 1 == 0, 'Address not word aligned'
+            if (rs.op2_val + rs.instruction.offset)/4 % 1 != 0 or\
+                rs.op2_val + rs.instruction.offset < 0 or rs.op2_val + rs.instruction.offset > 255:
+                rs.instruction.fault = True
+                return 0
             return (rs.op2_val + rs.instruction.offset)//4
 
     def get_oldest_ready(self, clock_cycle):
