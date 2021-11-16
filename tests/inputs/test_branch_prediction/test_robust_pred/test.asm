@@ -1,0 +1,14 @@
+ADDi, R2, R0, 3
+ADDi, R1, R0, 0
+ADDi, R1, R1, 1
+BEQ, R1, R2, 8
+ADDi, R3, R3, 3
+ADDi, R4, R4, 4
+ADDi, R5, R5, 5
+ADDi, R6, R6, 6
+ADDi, R7, R7, 7
+ADDi, R8, R8, 8
+ADDi, R9, R9, 9
+BNE, R2, R0, -10
+ADDi, R10, R0, 8
+SD, R3, 0(R10)
