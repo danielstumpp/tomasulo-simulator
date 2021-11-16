@@ -102,7 +102,7 @@ class State:
             flist.append(f'F{i}')
             rlist.append(f'R{i}')
             fval.append(self.registers[f'F{i}'])
-            rval.append(self.registers[f'R{i}'])
+            rval.append(int(self.registers[f'R{i}']))
         
         r_tab = PrettyTable([' '] + rlist)
         r_tab.add_row(['value'] + rval)
