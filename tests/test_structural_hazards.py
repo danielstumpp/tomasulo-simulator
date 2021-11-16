@@ -96,3 +96,13 @@ def test_SD_RS_hazard():
     assert state.memory[2] == .1
     assert state.memory[3] == .2
     assert tt_gold == tt_test
+
+
+def test_CDB_hazard():
+    state = simulator.run(root + 'test_CDB_hazard/test.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file(root + 'test_CDB_hazard/test.tt')
+    assert list(state.RAT.values()) == list(state.RAT.keys())
+    assert tt_gold == tt_test
