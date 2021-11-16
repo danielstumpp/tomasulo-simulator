@@ -43,3 +43,11 @@ def test_straight_forwarding_1():
     tt_gold.load_from_file(root + 'test_straight_forwarding_1/straight_forwarding_1.tt')
     assert list(state.RAT.values()) == list(state.RAT.keys())
     assert tt_gold == tt_test
+    assert state.memory[1] == 5.5
+    assert state.memory[2] == 2.75
+    assert state.registers['F1'] == 5.5
+    assert state.registers['F2'] == 2.75
+    assert state.registers['F3'] == 2.75
+    assert state.registers['F4'] == 2.75
+    assert state.registers['F5'] == 2.75
+    

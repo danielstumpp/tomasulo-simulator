@@ -106,9 +106,10 @@ class MemoryUnit:
             self.memory_busy = False
 
     def try_put_CDB(self, clock_cycle):
-        if len(self.CDB_buffer) < self.CDB_capacity:
-            for rs in self.RS:
-                if rs.instruction.mem_cycle_end is not None and clock_cycle >= rs.instruction.mem_cycle_end:
+        done_rs = [rs for rs in self.RS if rs.instruction.mem_cycle_end is not None and clock_cycle >= rs.instruction.mem_cycle_end]
+        done_rs.sort(key=lambda x: x.instruction.issue_cycle)
+        for rs in done_rs:
+            if len(self.CDB_buffer) < self.CDB_capacity:
                     self.CDB_buffer.append(rs.instruction)
                     self.RS.remove(rs)
 
