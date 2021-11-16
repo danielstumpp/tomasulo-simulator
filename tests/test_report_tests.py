@@ -119,4 +119,4 @@ def test_misprediction_exception():
     tt_gold.load_from_file(root + 'test_misprediction_exception/test.tt')
     assert tt_gold == tt_test
     assert state.memory[0] == 0
-    assert state.memory[1] == 0
+    assert state.memory[1] == 4
