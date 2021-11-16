@@ -26,3 +26,14 @@ def test_R0_sd_index():
     assert state.registers['R0'] == 0
     assert state.memory[5] == .21
     assert tt_gold == tt_test
+
+
+def test_seg_fault():
+    state = simulator.run(root + 'test_seg_fault/seg_fault.yml')
+    tt_test = TimingTable()
+    tt_gold = TimingTable()
+    tt_test.load_from_state(state)
+    tt_gold.load_from_file(root + 'test_seg_fault/seg_fault.tt')
+    assert list(state.RAT.values()) == list(state.RAT.keys())
+    assert state.registers['R1'] == 10
+    assert tt_gold == tt_test
