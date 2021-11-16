@@ -1,0 +1,34 @@
+# yaml name field
+name: straight_hazards
+
+# Functional Unit Resources
+FUs:
+  # integer adders
+  IA:
+    numRS: 2
+    exCycles: 1
+    memCycles: 0
+    instances: 1
+  FPA:
+    numRS: 1
+    exCycles: 3
+    memCycles: 0
+    instances: 1
+  FPM:
+    numRS: 1
+    exCycles: 20
+    memCycles: 0
+    instances: 1
+  LSU:
+    numRS: 1
+    exCycles: 1
+    memCycles: 10
+    instances: 1
+
+ROBentries: 64
+CDBbufferLength: 100
+
+# init files
+memInitFile: tests/inputs/test_report_tests/test_loop_hazards_1/loop_hazards_1.mem
+regInitFile: tests/inputs/test_report_tests/test_loop_hazards_1/loop_hazards_1.reg
+instFile: tests/inputs/test_report_tests/test_loop_hazards_1/loop_hazards_1.asm
