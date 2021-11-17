@@ -9,5 +9,5 @@ setup(
     packages=['simulator'],  # same as name
     # external packages as dependencies
     install_requires=['pytest', 'pytest-cov', 'coveralls','pyyaml',
-     'argparse', 'PrettyTable'],
+     'argparse', 'PrettyTable', 'pytest-html'],
 )
