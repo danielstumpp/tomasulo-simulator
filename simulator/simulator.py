@@ -347,4 +347,9 @@ def run(config_file):
         loop, new_state = clock_tick(state, state_copies)
         #print(f'--------- Cycle {state.clock_cycle} ---------')
         
+    tt = TimingTable()
+    tt.load_from_state(state)
+    print(tt)
+    print('\nREGISTER VALUES: \n' + state.get_register_table())
+    print('\nNON-ZERO MEMORY VALUES: \n' + state.get_non_zero_memory_table())
     return state
