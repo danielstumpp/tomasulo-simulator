@@ -3,6 +3,7 @@
 [![Actions Status](https://github.com/danielstumpp/tomasulo-simulator/workflows/simulator/badge.svg)](https://github.com/danielstumpp/tomasulo-simulator/actions)
 
 **View The most recent test report [here](https://htmlpreview.github.io/?https://github.com/danielstumpp/tomasulo-simulator/blob/main/test_report/test_report.html)**
+---
 
 Implementation of Tomasulo's Algorithm for CA
 
