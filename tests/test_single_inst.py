@@ -76,7 +76,6 @@ def test_ld_one_inst():
     tt_gold = TimingTable()
     tt_test.load_from_state(state)
     tt_gold.load_from_file(root + 'test_ld_one_inst/ld_single.tt')
-    print(tt_test)
     assert tt_gold == tt_test
     assert state.registers['F31'] == 3.4
     assert list(state.RAT.values()) == list(state.RAT.keys())
@@ -88,8 +87,6 @@ def test_sd_one_inst():
     tt_gold = TimingTable()
     tt_test.load_from_state(state)
     tt_gold.load_from_file(root + 'test_sd_one_inst/sd_single.tt')
-    print(tt_test)
-    print(state.memory)
     assert len(state.LSU.RS) == 0
     assert tt_gold == tt_test
     assert state.memory[4] == 4.5
@@ -102,8 +99,6 @@ def test_nop_one_inst():
     tt_gold = TimingTable()
     tt_test.load_from_state(state)
     tt_gold.load_from_file(root + 'test_nop_one_inst/nop_single.tt')
-    print(tt_test)
-    print(state.memory)
     assert len(state.LSU.RS) == 0
     assert state.registers['R0'] == 0
     assert state.registers['R1'] == 10

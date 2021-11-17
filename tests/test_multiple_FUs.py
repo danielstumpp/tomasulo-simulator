@@ -10,7 +10,6 @@ def test_multiple_FPA():
     tt_gold = TimingTable()
     tt_test.load_from_state(state)
     tt_gold.load_from_file(root + 'test_multiple_FPA/multiple_FPA.tt')
-    print(tt_test)
     assert list(state.RAT.values()) == list(state.RAT.keys())
     assert state.registers['F1'] == 1
     assert state.registers['F2'] == 3
@@ -46,6 +45,5 @@ def test_multiple_IA():
     assert state.registers['R12'] == 4
     assert state.registers['R14'] == 10
     assert state.registers['R13'] == 5
-    print(tt_gold)
     assert tt_gold == tt_test
     

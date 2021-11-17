@@ -79,7 +79,6 @@ def test_straight_hazards_1():
     tt_gold = TimingTable()
     tt_test.load_from_state(state)
     tt_gold.load_from_file(root + 'test_loop_hazards_1/loop_hazards_1.tt')
-    print(tt_test)
     assert list(state.RAT.values()) == list(state.RAT.keys())
     # assert tt_gold == tt_test
     assert state.registers['F1'] == 252.5

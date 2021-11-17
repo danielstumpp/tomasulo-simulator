@@ -15,8 +15,6 @@ def test_fib():
     tt_test.load_from_state(state)
     # tt_gold.load_from_file(root + 'test_simple_loop/test.tt')
     # assert tt_gold == tt_test
-    print(tt_test)
-    print('fib result',state.memory[1])
     # print(state.memory)
     assert state.memory[1] == 233
     assert list(state.RAT.values()) == list(state.RAT.keys())
