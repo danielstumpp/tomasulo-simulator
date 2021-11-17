@@ -49,7 +49,7 @@ def test_robust_pred():
     tt_test = TimingTable()
     tt_gold = TimingTable()
     tt_test.load_from_state(state)
-    tt_gold.load_from_file(root + 'test_robust_pred/test.tt')
+    #tt_gold.load_from_file(root + 'test_robust_pred/test.tt')
     #assert tt_gold == tt_test
     assert state.registers['R1'] == 3
     assert state.registers['R3'] == 6
