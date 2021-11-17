@@ -39,4 +39,16 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --html=./test_report/test_report.html
+    - name: commit update pytest report in repo
+      run: |
+        git config --local user.name "workflow"
+        git add ./test_report
+        git commit -m "auto-updating test report"
+    - name: push updated report
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        force: true
+      
+
         
